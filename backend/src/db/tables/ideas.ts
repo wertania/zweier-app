@@ -15,7 +15,7 @@ import {
 } from "drizzle-valibot";
 import { tenants } from "@framework/lib/db/schema/users";
 import { pgBaseTable } from "../schema-base";
-import { weatherEnum, durationEnum, timeOfDayEnum } from "./enums";
+import { weatherEnum, durationEnum, timeOfDayEnum, categoryEnum } from "./enums";
 import { destinations } from "./destinations";
 
 /**
@@ -44,6 +44,10 @@ export const ideas = pgBaseTable(
       .default(sql`'{any}'`),
     duration: durationEnum("duration").notNull().default("half_day"),
     timeOfDay: timeOfDayEnum("time_of_day").notNull().default("any"),
+    categories: categoryEnum("categories")
+      .array()
+      .notNull()
+      .default(sql`'{}'`),
     favorite: boolean("favorite").notNull().default(false),
     done: boolean("done").notNull().default(false),
     doneAt: timestamp("done_at", { mode: "string" }),

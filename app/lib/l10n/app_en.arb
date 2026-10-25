@@ -190,5 +190,12 @@
   "timeOfDayLabel": "TIME OF DAY",
   "locationHint": "Place (optional), e.g. city park",
   "weatherMultiHint": "Pick as many as you like",
-  "openInMaps": "Open in maps"
+  "openInMaps": "Open in maps",
+  "categoryCity": "Hustle & city",
+  "categoryOutdoor": "Outdoor",
+  "categoryFriends": "With friends",
+  "categoryCulture": "Culture",
+  "categoryLabel": "CATEGORY",
+  "moodLabel": "WHAT ARE YOU IN THE MOOD FOR?",
+  "optional": "optional"
 }

@@ -118,5 +118,12 @@
   "timeOfDayLabel": "TAGESZEIT",
   "locationHint": "Ort (optional), z. B. Stadtpark",
   "weatherMultiHint": "Mehrere möglich",
-  "openInMaps": "In Karten öffnen"
+  "openInMaps": "In Karten öffnen",
+  "categoryCity": "Trubel & Stadt",
+  "categoryOutdoor": "Outdoor",
+  "categoryFriends": "Mit Freunden",
+  "categoryCulture": "Kultur",
+  "categoryLabel": "KATEGORIE",
+  "moodLabel": "WORAUF HABT IHR LUST?",
+  "optional": "optional"
 }

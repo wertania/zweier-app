@@ -1,4 +1,4 @@
-import type { DurationType, IdeasSelect, TimeOfDayType, WeatherType } from "../db/schema";
+import type { CategoryType, DurationType, IdeasSelect, TimeOfDayType, WeatherType } from "../db/schema";
 import {
   durationsUpTo,
   fitsTimeOfDay,
@@ -14,6 +14,8 @@ export type SuggestionRequest = {
   maxDuration?: DurationType;
   /** "evening" = only ideas that work in the evening. Default: any. */
   timeOfDay?: TimeOfDayType;
+  /** Only ideas of this category. */
+  category?: CategoryType;
   latitude?: number;
   longitude?: number;
   /** ISO date (YYYY-MM-DD) the suggestion is for. Defaults to today. */
@@ -60,7 +62,7 @@ export async function getSuggestions(
 
   const allowedDurations = durationsUpTo(req.maxDuration ?? "multi_day");
   const candidates = (
-    await getIdeas(tenantId, { destinationId: req.destinationId ?? "none" })
+    await getIdeas(tenantId, { destinationId: req.destinationId ?? "none", category: req.category })
   ).filter(
     (idea) =>
       allowedDurations.includes(idea.duration) &&

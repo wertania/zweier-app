@@ -19,6 +19,7 @@ class _IdeasScreenState extends State<IdeasScreen> {
   Weather? _weather;
   IdeaDuration? _duration;
   bool _eveningOnly = false;
+  Category? _category;
   bool _showDone = false;
 
   @override
@@ -28,6 +29,7 @@ class _IdeasScreenState extends State<IdeasScreen> {
       if (!_showDone && i.done) return false;
       if (_weather != null && !i.fitsWeather(_weather!)) return false;
       if (_eveningOnly && i.timeOfDay == DayTime.day) return false;
+      if (_category != null && !i.categories.contains(_category)) return false;
       if (_duration != null && i.duration != _duration) return false;
       return true;
     }).toList();
@@ -92,6 +94,24 @@ class _IdeasScreenState extends State<IdeasScreen> {
                         label: Text('${d.emoji} ${d.label(context)}'),
                         selected: _duration == d,
                         onSelected: (s) => setState(() => _duration = s ? d : null),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 6),
+            SizedBox(
+              height: 44,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  for (final c in Category.values)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        label: Text('${c.emoji} ${c.label(context)}'),
+                        selected: _category == c,
+                        onSelected: (s) => setState(() => _category = s ? c : null),
                       ),
                     ),
                 ],

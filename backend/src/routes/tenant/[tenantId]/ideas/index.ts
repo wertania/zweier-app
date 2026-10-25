@@ -8,7 +8,7 @@ import { HTTPException } from "hono/http-exception";
 import { isTenantMember } from "@framework/routes/tenant";
 import { validator } from "hono-openapi";
 import * as v from "valibot";
-import { durationTypes, timeOfDayTypes, weatherTypes } from "../../../../db/schema";
+import { categoryTypes, durationTypes, timeOfDayTypes, weatherTypes } from "../../../../db/schema";
 import {
   createIdea,
   deleteIdea,
@@ -43,6 +43,7 @@ app.get(
       weather: v.optional(v.picklist(weatherTypes)),
       duration: v.optional(v.picklist(durationTypes)),
       timeOfDay: v.optional(v.picklist(timeOfDayTypes)),
+      category: v.optional(v.picklist(categoryTypes)),
     })
   ),
   async (c) => {

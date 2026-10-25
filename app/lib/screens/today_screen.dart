@@ -21,6 +21,7 @@ class _TodayScreenState extends State<TodayScreen> {
   late DateTime _day = _defaultDay();
   IdeaDuration _maxDuration = IdeaDuration.fullDay;
   Weather? _weather; // null = use the forecast
+  Category? _category; // null = no preference
   DayTime _dayTime = DateTime.now().hour >= 17 ? DayTime.evening : DayTime.day;
   bool _busy = false;
   SuggestionResult? _result;
@@ -62,6 +63,7 @@ class _TodayScreenState extends State<TodayScreen> {
         weather: _weather,
         maxDuration: _maxDuration,
         timeOfDay: _dayTime,
+        category: _category,
         latitude: pos?.latitude,
         longitude: pos?.longitude,
         date: _day,
@@ -130,6 +132,15 @@ class _TodayScreenState extends State<TodayScreen> {
                 label: Text('${d.emoji} ${d.label(context)}'),
                 selected: d == _maxDuration,
                 onSelected: (_) => setState(() => _maxDuration = d),
+              ),
+          ]),
+          SectionLabel(context.l10n.moodLabel),
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            for (final c in Category.values)
+              ChoiceChip(
+                label: Text('${c.emoji} ${c.label(context)}'),
+                selected: _category == c,
+                onSelected: (s) => setState(() => _category = s ? c : null),
               ),
           ]),
           SectionLabel(context.l10n.weatherLabel),

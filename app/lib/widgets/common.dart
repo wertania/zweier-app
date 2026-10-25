@@ -172,6 +172,8 @@ class IdeaCard extends StatelessWidget {
                           Pill('${w.emoji} ${w.label(context)}', color: weatherColor(w)),
                         Pill('${idea.duration.emoji} ${idea.duration.label(context)}',
                             color: ZColors.apricot),
+                        for (final c in idea.sortedCategories)
+                          Pill('${c.emoji} ${c.label(context)}', color: const Color(0xFFDDEFE0)),
                         if (idea.timeOfDay != DayTime.any)
                           Pill('${idea.timeOfDay.emoji} ${idea.timeOfDay.label(context)}',
                               color: ZColors.lavender),

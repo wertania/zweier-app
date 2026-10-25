@@ -390,4 +390,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get openInMaps => 'In Karten öffnen';
+
+  @override
+  String get categoryCity => 'Trubel & Stadt';
+
+  @override
+  String get categoryOutdoor => 'Outdoor';
+
+  @override
+  String get categoryFriends => 'Mit Freunden';
+
+  @override
+  String get categoryCulture => 'Kultur';
+
+  @override
+  String get categoryLabel => 'KATEGORIE';
+
+  @override
+  String get moodLabel => 'WORAUF HABT IHR LUST?';
+
+  @override
+  String get optional => 'optional';
 }

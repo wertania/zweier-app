@@ -41,6 +41,20 @@ enum DayTime {
       DayTime.values.firstWhere((t) => t.name == name, orElse: () => DayTime.any);
 }
 
+/// Optional categories; an idea can have several. Mirrors the backend enum.
+enum Category {
+  city('🏙️'),
+  outdoor('🌲'),
+  friends('👯'),
+  culture('🎭');
+
+  const Category(this.emoji);
+  final String emoji;
+
+  static Category? tryParse(String? name) =>
+      Category.values.where((c) => c.name == name).firstOrNull;
+}
+
 class Idea {
   Idea({
     this.id,
@@ -50,11 +64,13 @@ class Idea {
     Set<Weather>? weathers,
     this.duration = IdeaDuration.halfDay,
     this.timeOfDay = DayTime.any,
+    Set<Category>? categories,
     this.location,
     this.favorite = false,
     this.done = false,
     this.destinationId,
-  }) : weathers = weathers ?? {Weather.any};
+  })  : weathers = weathers ?? {Weather.any},
+        categories = categories ?? {};
 
   final String? id;
   String title;
@@ -64,6 +80,7 @@ class Idea {
   Set<Weather> weathers;
   IdeaDuration duration;
   DayTime timeOfDay;
+  Set<Category> categories;
   String? location;
   bool favorite;
   bool done;
@@ -79,6 +96,10 @@ class Idea {
             : {Weather.fromName(j['weather'] as String?)},
         duration: IdeaDuration.fromName(j['duration'] as String?),
         timeOfDay: DayTime.fromName(j['timeOfDay'] as String?),
+        categories: ((j['categories'] as List?) ?? [])
+            .map((c) => Category.tryParse(c as String?))
+            .whereType<Category>()
+            .toSet(),
         location: j['location'] as String?,
         favorite: j['favorite'] as bool? ?? false,
         done: j['done'] as bool? ?? false,
@@ -102,6 +123,10 @@ class Idea {
     weathers = next.isEmpty ? {Weather.any} : next;
   }
 
+  /// Categories in display order.
+  List<Category> get sortedCategories =>
+      Category.values.where(categories.contains).toList();
+
   /// Weathers in display order.
   List<Weather> get sortedWeathers =>
       Weather.values.where(weathers.contains).toList();
@@ -113,6 +138,7 @@ class Idea {
         'weathers': weathers.map((w) => w.name).toList(),
         'duration': duration.apiName,
         'timeOfDay': timeOfDay.name,
+        'categories': sortedCategories.map((c) => c.name).toList(),
         'location': location,
         'favorite': favorite,
         'done': done,

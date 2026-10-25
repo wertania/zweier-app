@@ -140,6 +140,24 @@ class _IdeaEditorState extends State<_IdeaEditor> {
                   onSelected: (_) => setState(() => _draft.toggleWeather(w)),
                 ),
             ]),
+            Row(children: [
+              SectionLabel(context.l10n.categoryLabel),
+              const SizedBox(width: 8),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text('${context.l10n.optional} · ${context.l10n.weatherMultiHint}',
+                    style: const TextStyle(fontSize: 12, color: ZColors.plumSoft)),
+              ),
+            ]),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              for (final c in Category.values)
+                FilterChip(
+                  label: Text('${c.emoji} ${c.label(context)}'),
+                  selected: _draft.categories.contains(c),
+                  showCheckmark: false,
+                  onSelected: (s) => setState(() => s ? _draft.categories.add(c) : _draft.categories.remove(c)),
+                ),
+            ]),
             SectionLabel(context.l10n.timeOfDayLabel),
             Wrap(spacing: 8, runSpacing: 8, children: [
               for (final t in DayTime.values)

@@ -68,4 +68,14 @@ void main() {
     idea.toggleWeather(Weather.sunny);
     expect(idea.weathers, {Weather.any}); // nothing selected = any
   });
+
+  test('categories round trip, unknown ones are ignored', () {
+    final idea = Idea.fromJson({
+      'title': 'Street food',
+      'categories': ['friends', 'city', 'sports'],
+    });
+    expect(idea.sortedCategories, [Category.city, Category.friends]);
+    expect(idea.toJson()['categories'], ['city', 'friends']);
+    expect(Idea(title: 'x').categories, isEmpty);
+  });
 }

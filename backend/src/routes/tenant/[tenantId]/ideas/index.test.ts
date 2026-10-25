@@ -179,6 +179,33 @@ describe("Ideas, destinations & suggestions", () => {
     expect(empty.jsonResponse?.data.weathers).toEqual(["any"]);
   });
 
+  test("categories: several per idea, filter and suggestions", async () => {
+    const created = await testFetcher.post(app, `${base}/ideas`, ownerToken, {
+      title: "Street food market",
+      categories: ["city", "friends", "city"],
+      duration: "short",
+    });
+    expect(created.status).toBe(200);
+    const idea = created.jsonResponse?.data;
+    expect(idea.categories).toEqual(["city", "friends"]); // duplicates removed
+
+    const friends = await testFetcher.get(app, `${base}/ideas?destinationId=none&category=friends`, ownerToken);
+    expect(friends.jsonResponse?.data.map((i: any) => i.id)).toContain(idea.id);
+    expect(friends.jsonResponse?.data.every((i: any) => i.categories.includes("friends"))).toBe(true);
+    const culture = await testFetcher.get(app, `${base}/ideas?destinationId=none&category=culture`, ownerToken);
+    expect(culture.jsonResponse?.data.map((i: any) => i.id)).not.toContain(idea.id);
+
+    const tips = await testFetcher.get(app, `${base}/suggestions?category=city&count=20`, ownerToken);
+    expect(tips.jsonResponse?.data.suggestions.length).toBeGreaterThan(0);
+    expect(tips.jsonResponse?.data.suggestions.every((i: any) => i.categories.includes("city"))).toBe(true);
+
+    const invalid = await testFetcher.post(app, `${base}/ideas`, ownerToken, {
+      title: "Bad",
+      categories: ["sports"],
+    });
+    expect(invalid.status).toBe(400);
+  });
+
   test("old app versions can still send a single weather", async () => {
     const created = await testFetcher.post(app, `${base}/ideas`, ownerToken, {
       title: "Snowball fight",

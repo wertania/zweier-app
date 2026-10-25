@@ -7,7 +7,7 @@ import { Hono } from "hono";
 import { isTenantMember } from "@framework/routes/tenant";
 import { validator } from "hono-openapi";
 import * as v from "valibot";
-import { durationTypes, timeOfDayTypes, weatherTypes } from "../../../../db/schema";
+import { categoryTypes, durationTypes, timeOfDayTypes, weatherTypes } from "../../../../db/schema";
 import { getSuggestions } from "../../../../lib/suggestions";
 
 const app: SymbiosikaFrameworkHonoApp = new Hono();
@@ -25,6 +25,7 @@ app.get(
       weather: v.optional(v.picklist(weatherTypes)),
       maxDuration: v.optional(v.picklist(durationTypes)),
       timeOfDay: v.optional(v.picklist(timeOfDayTypes)),
+      category: v.optional(v.picklist(categoryTypes)),
       latitude: v.optional(numberString),
       longitude: v.optional(numberString),
       date: v.optional(v.pipe(v.string(), v.isoDate())),

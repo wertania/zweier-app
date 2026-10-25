@@ -390,4 +390,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openInMaps => 'Open in maps';
+
+  @override
+  String get categoryCity => 'Hustle & city';
+
+  @override
+  String get categoryOutdoor => 'Outdoor';
+
+  @override
+  String get categoryFriends => 'With friends';
+
+  @override
+  String get categoryCulture => 'Culture';
+
+  @override
+  String get categoryLabel => 'CATEGORY';
+
+  @override
+  String get moodLabel => 'WHAT ARE YOU IN THE MOOD FOR?';
+
+  @override
+  String get optional => 'optional';
 }

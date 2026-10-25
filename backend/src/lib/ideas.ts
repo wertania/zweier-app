@@ -1,11 +1,12 @@
 import { getDb } from "@framework/lib/db/db-connection";
-import { and, arrayOverlaps, desc, eq, inArray, isNull } from "drizzle-orm";
+import { and, arrayContains, arrayOverlaps, desc, eq, inArray, isNull } from "drizzle-orm";
 import * as v from "valibot";
 import {
   ideas,
   ideasInsertSchema,
   ideasUpdateSchema,
   durationTypes,
+  type CategoryType,
   type DurationType,
   type IdeasSelect,
   type TimeOfDayType,
@@ -21,6 +22,7 @@ export type IdeaFilter = {
   duration?: DurationType;
   /** Ideas that fit this time of day (including "any time" ideas). */
   timeOfDay?: TimeOfDayType;
+  category?: CategoryType;
 };
 
 /** An idea as returned by the API. */
@@ -51,7 +53,8 @@ export function fitsTimeOfDay(idea: Pick<IdeasSelect, "timeOfDay">, timeOfDay: T
  * normalizes `weathers`: no duplicates, "any" wins, empty means "any".
  */
 function normalizeInput(data: unknown) {
-  const { weather, weathers, ...rest } = (data ?? {}) as Record<string, unknown>;
+  const { weather, weathers, categories, ...input } = (data ?? {}) as Record<string, unknown>;
+  const rest = Array.isArray(categories) ? { ...input, categories: [...new Set(categories)] } : input;
   const list = Array.isArray(weathers)
     ? weathers
     : typeof weather === "string"
@@ -79,6 +82,7 @@ export async function getIdeas(tenantId: string, filter: IdeaFilter = {}) {
   if (filter.timeOfDay && filter.timeOfDay !== "any") {
     conditions.push(inArray(ideas.timeOfDay, [filter.timeOfDay, "any"]));
   }
+  if (filter.category) conditions.push(arrayContains(ideas.categories, [filter.category]));
 
   return await getDb()
     .select()

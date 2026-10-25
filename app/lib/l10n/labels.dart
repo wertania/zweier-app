@@ -33,6 +33,18 @@ extension DayTimeLabel on DayTime {
   }
 }
 
+extension CategoryLabel on Category {
+  String label(BuildContext context) {
+    final l = context.l10n;
+    return switch (this) {
+      Category.city => l.categoryCity,
+      Category.outdoor => l.categoryOutdoor,
+      Category.friends => l.categoryFriends,
+      Category.culture => l.categoryCulture,
+    };
+  }
+}
+
 extension DurationLabel on IdeaDuration {
   String label(BuildContext context) {
     final l = context.l10n;

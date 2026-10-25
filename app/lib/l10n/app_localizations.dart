@@ -811,6 +811,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open in maps'**
   String get openInMaps;
+
+  /// No description provided for @categoryCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Hustle & city'**
+  String get categoryCity;
+
+  /// No description provided for @categoryOutdoor.
+  ///
+  /// In en, this message translates to:
+  /// **'Outdoor'**
+  String get categoryOutdoor;
+
+  /// No description provided for @categoryFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'With friends'**
+  String get categoryFriends;
+
+  /// No description provided for @categoryCulture.
+  ///
+  /// In en, this message translates to:
+  /// **'Culture'**
+  String get categoryCulture;
+
+  /// No description provided for @categoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CATEGORY'**
+  String get categoryLabel;
+
+  /// No description provided for @moodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'WHAT ARE YOU IN THE MOOD FOR?'**
+  String get moodLabel;
+
+  /// No description provided for @optional.
+  ///
+  /// In en, this message translates to:
+  /// **'optional'**
+  String get optional;
 }
 
 class _AppLocalizationsDelegate
