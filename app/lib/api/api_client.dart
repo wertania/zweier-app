@@ -15,19 +15,41 @@ class ApiException implements Exception {
 
 /// Thin client for the Zweier backend (symbiosika framework, `/api/v1`).
 class ApiClient {
-  ApiClient({required this.baseUrl, this.token, this.tenantId});
+  ApiClient({required String serverUrl, this.token, this.tenantId})
+      : _serverUrl = normalizeServerUrl(serverUrl);
 
-  String baseUrl;
+  static const apiPath = '/api/v1';
+
+  /// Turns whatever the user typed into a server root URL:
+  /// adds `https://` if no scheme is given and drops trailing slashes and a
+  /// trailing `/api/v1`, e.g. `zweier.example.com/api/v1/` → `https://zweier.example.com`.
+  static String normalizeServerUrl(String input) {
+    var url = input.trim();
+    if (!url.contains('://')) url = 'https://$url';
+    while (url.endsWith('/')) {
+      url = url.substring(0, url.length - 1);
+    }
+    if (url.endsWith(apiPath)) url = url.substring(0, url.length - apiPath.length);
+    while (url.endsWith('/')) {
+      url = url.substring(0, url.length - 1);
+    }
+    return url;
+  }
+
+  String _serverUrl;
   String? token;
   String? tenantId;
+
+  /// Server root without the API path, as shown to the user.
+  String get serverUrl => _serverUrl;
+  set serverUrl(String value) => _serverUrl = normalizeServerUrl(value);
 
   Uri _uri(String path, [Map<String, String?>? query]) {
     final q = <String, String>{};
     query?.forEach((k, v) {
       if (v != null) q[k] = v;
     });
-    final base = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
-    return Uri.parse('$base$path').replace(queryParameters: q.isEmpty ? null : q);
+    return Uri.parse('$_serverUrl$apiPath$path').replace(queryParameters: q.isEmpty ? null : q);
   }
 
   Map<String, String> get _headers => {

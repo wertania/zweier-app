@@ -52,12 +52,12 @@ jobs:
           ZWEIER_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ZWEIER_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ZWEIER_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          # optional repository variable: default backend URL baked into the app
-          API_BASE_URL: ${{ vars.API_BASE_URL }}
+          # optional repository variable: default server built into the app
+          SERVER_URL: ${{ vars.SERVER_URL }}
         run: |
           VERSION="${TAG#v}"
           DEFINES=""
-          if [ -n "$API_BASE_URL" ]; then DEFINES="--dart-define=API_BASE_URL=$API_BASE_URL"; fi
+          if [ -n "$SERVER_URL" ]; then DEFINES="--dart-define=SERVER_URL=$SERVER_URL"; fi
           flutter build apk --release \
             --build-name="$VERSION" \
             --build-number="${{ github.run_number }}" \

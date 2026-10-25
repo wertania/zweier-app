@@ -60,8 +60,9 @@ Authentication, tenants and invitations come from the framework (`/user/request-
 
 ## Self-hosting
 
-The app needs a running backend. The APK has no server built in – enter your server URL on the login screen
-(e.g. `https://zweier.example.com/api/v1`). Release builds only talk HTTPS, so put a reverse proxy with TLS
+The app connects to `https://zweier-app.resomo.de` by default. To use your own backend, tap *Set server* on the
+login screen and enter its address (e.g. `zweier.example.com` – `https://` and the API path `/api/v1` are added
+automatically). Release builds only talk HTTPS, so put a reverse proxy with TLS
 (Caddy, Traefik, nginx, …) in front of the backend.
 
 ### Docker (recommended)
@@ -106,8 +107,8 @@ bun run test:app          # app tests against an embedded database (test:local =
 # app
 cd app
 flutter pub get
-flutter run               # emulator default backend: http://10.0.2.2:3000/api/v1
-flutter run --dart-define=API_BASE_URL=https://your-server/api/v1
+flutter run --dart-define=SERVER_URL=http://10.0.2.2:3000   # local backend from the Android emulator
+flutter run                                                 # default server: https://zweier-app.resomo.de
 ```
 
 Translations live in `app/lib/l10n/app_*.arb` – adding a language is a new ARB file.
@@ -118,8 +119,8 @@ Push a tag like `v1.0.0`: the [release workflow](.github/workflows/release.yml) 
 GitHub release, and the [Docker workflow](.github/workflows/docker.yml) publishes the backend image as `1.0.0`.
 Every push to `main` that touches the backend updates the `latest` image. To sign with your own key (needed for in-place updates), add these repository secrets:
 `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
-Without them the APK is signed with a throwaway debug key. The optional repository variable `API_BASE_URL`
-sets a default server URL in the app.
+Without them the APK is signed with a throwaway debug key. The optional repository variable `SERVER_URL`
+changes the default server built into the app.
 
 Locally, put the same values into `app/android/key.properties` (`storeFile`, `storePassword`, `keyAlias`, `keyPassword`).
 

@@ -31,19 +31,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _editServer() async {
     final state = context.read<AppState>();
-    final ctrl = TextEditingController(text: state.api.baseUrl);
+    final ctrl = TextEditingController(text: state.api.serverUrl);
     final url = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(context.l10n.server),
-        content: TextField(controller: ctrl, decoration: const InputDecoration(hintText: 'https://…/api/v1')),
+        content: TextField(
+          controller: ctrl,
+          keyboardType: TextInputType.url,
+          autocorrect: false,
+          decoration: const InputDecoration(hintText: 'https://zweier-app.resomo.de'),
+        ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: Text(context.l10n.cancel)),
           FilledButton(onPressed: () => Navigator.pop(ctx, ctrl.text), child: Text(context.l10n.save)),
         ],
       ),
     );
-    if (url != null && url.isNotEmpty) await state.setBaseUrl(url);
+    if (url != null) await state.setServerUrl(url);
   }
 
   @override

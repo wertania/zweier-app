@@ -101,7 +101,7 @@ class _UsScreenState extends State<UsScreen> {
               ListTile(
                 leading: const Icon(Icons.dns_outlined),
                 title: Text(context.l10n.server),
-                subtitle: Text(state.api.baseUrl),
+                subtitle: Text(state.api.serverUrl),
               ),
               ListTile(
                 leading: const Icon(Icons.logout_rounded, color: ZColors.roseDark),

@@ -4,17 +4,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api/api_client.dart';
 import '../models/models.dart';
 
-const _defaultBaseUrl = String.fromEnvironment(
-  'API_BASE_URL',
-  // 10.0.2.2 is the host machine from inside the Android emulator
-  defaultValue: 'http://10.0.2.2:3000/api/v1',
+/// Default backend. Override at build time with `--dart-define=SERVER_URL=…`
+/// (e.g. `http://10.0.2.2:3000` for a local backend from the Android emulator).
+const _defaultServerUrl = String.fromEnvironment(
+  'SERVER_URL',
+  defaultValue: 'https://zweier-app.resomo.de',
 );
 
 enum Stage { loading, loggedOut, needsCouple, ready }
 
 /// Central app state: session, our couple space, ideas and destinations.
 class AppState extends ChangeNotifier {
-  final api = ApiClient(baseUrl: _defaultBaseUrl);
+  final api = ApiClient(serverUrl: _defaultServerUrl);
   late SharedPreferences _prefs;
 
   Stage stage = Stage.loading;
@@ -26,7 +27,9 @@ class AppState extends ChangeNotifier {
 
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
-    api.baseUrl = _prefs.getString('baseUrl') ?? _defaultBaseUrl;
+    // 'baseUrl' is the key used by 1.0.0 (stored with the API path)
+    api.serverUrl =
+        _prefs.getString('serverUrl') ?? _prefs.getString('baseUrl') ?? _defaultServerUrl;
     api.token = _prefs.getString('token');
     email = _prefs.getString('email');
     if (api.token == null) {
@@ -51,9 +54,10 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setBaseUrl(String url) async {
-    api.baseUrl = url.trim();
-    await _prefs.setString('baseUrl', api.baseUrl);
+  Future<void> setServerUrl(String url) async {
+    api.serverUrl = url.trim().isEmpty ? _defaultServerUrl : url;
+    await _prefs.setString('serverUrl', api.serverUrl);
+    await _prefs.remove('baseUrl');
     notifyListeners();
   }
 
