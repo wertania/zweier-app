@@ -1,2 +1,4 @@
 # Root-level temporary files only. App-specific ignores live in backend/.gitignore and frontend/.gitignore.
 /tmp/
+# local deployment secrets
+/deploy/.env

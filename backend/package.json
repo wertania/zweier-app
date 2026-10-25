@@ -64,6 +64,7 @@
     "framework:generate": "drizzle-kit generate --config framework/drizzle.config.ts",
     "generate": "drizzle-kit generate --config framework/drizzle.config.ts && drizzle-kit generate",
     "migrate": "drizzle-kit migrate --config framework/drizzle.config.ts && drizzle-kit migrate",
+    "migrate:runtime": "bun run src/scripts/migrate.ts",
     "studio": "drizzle-kit studio",
     "release:patch": "tsc && npm version patch && git push --follow-tags && npm publish",
     "release:minor": "tsc && npm version minor && git push --follow-tags && npm publish",

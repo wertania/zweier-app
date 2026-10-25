@@ -1,0 +1,10 @@
+**/node_modules
+**/.env
+**/dev-db
+**/logs
+**/dist
+
+app/
+docs/
+.git
+backend/framework/.git

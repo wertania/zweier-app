@@ -37,7 +37,8 @@
 |---|---|
 | `app/` | Flutter Android app |
 | `backend/` | Bun + Hono API on the [symbiosika-framework](https://github.com/symbiosika/symbiosika-framework) (git submodule in `backend/framework`, Apache-2.0) |
-| `.github/workflows/` | CI (backend tests, Flutter analyze/test) and the APK release workflow |
+| `deploy/` | `docker-compose.yml` and `.env.example` for self-hosting |
+| `.github/workflows/` | CI, APK release and Docker image workflows |
 
 ### Data model
 
@@ -60,19 +61,36 @@ Authentication, tenants and invitations come from the framework (`/user/request-
 ## Self-hosting
 
 The app needs a running backend. The APK has no server built in – enter your server URL on the login screen
-(e.g. `https://zweier.example.com/api/v1`). Release builds only talk HTTPS.
+(e.g. `https://zweier.example.com/api/v1`). Release builds only talk HTTPS, so put a reverse proxy with TLS
+(Caddy, Traefik, nginx, …) in front of the backend.
+
+### Docker (recommended)
+
+The backend is published as a multi-arch image (amd64/arm64) at
+[`ghcr.io/wertania/zweier-app`](https://github.com/wertania/zweier-app/pkgs/container/zweier-app):
+
+```bash
+mkdir zweier && cd zweier
+curl -O https://raw.githubusercontent.com/wertania/zweier-app/main/deploy/docker-compose.yml
+curl -o .env https://raw.githubusercontent.com/wertania/zweier-app/main/deploy/.env.example
+# fill in the secrets and SMTP settings in .env (login codes are sent by email)
+docker compose up -d
+```
+
+Migrations run automatically on every start. Image tags: `latest` (main), `1.2.3` / `1.2` (releases) and `sha-…`.
+Build it yourself with `docker build -t zweier-backend .` from the repository root.
+
+### Without Docker
 
 ```bash
 git clone --recurse-submodules https://github.com/wertania/zweier-app.git
 cd zweier-app/backend
 bun install
 bun run init              # generates secrets into .env
-# configure POSTGRES_* and SMTP_* in .env (login codes are sent by email)
+# configure POSTGRES_* and SMTP_* in .env
 bun run migrate
 bun run build && bun ./dist/index.js
 ```
-
-The `Dockerfile` in the repository root runs a pre-built `dist/` and applies migrations on start.
 
 ## Development
 
@@ -96,8 +114,9 @@ Translations live in `app/lib/l10n/app_*.arb` – adding a language is a new ARB
 
 ## Releasing
 
-Push a tag like `v1.0.0`; the [release workflow](.github/workflows/release.yml) builds the APK and attaches it to a
-GitHub release. To sign with your own key (needed for in-place updates), add these repository secrets:
+Push a tag like `v1.0.0`: the [release workflow](.github/workflows/release.yml) builds the APK and attaches it to a
+GitHub release, and the [Docker workflow](.github/workflows/docker.yml) publishes the backend image as `1.0.0`.
+Every push to `main` that touches the backend updates the `latest` image. To sign with your own key (needed for in-place updates), add these repository secrets:
 `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
 Without them the APK is signed with a throwaway debug key. The optional repository variable `API_BASE_URL`
 sets a default server URL in the app.

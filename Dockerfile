@@ -1,21 +1,28 @@
-# Base image with dependencies
-# This Dockerfile is designed to run in GitHub Actions only
-FROM oven/bun:1 AS base
-WORKDIR /usr/src/app
+# Zweier backend – self-contained image.
+#   docker build -t zweier-backend .
+#   docker run -p 3000:3000 --env-file backend/.env zweier-backend
+# Framework + app migrations run on every start, then the server listens on :3000.
 
-# Install Drizzle-kit
-RUN bun i -g drizzle-orm pg drizzle-kit
+# ---- build ----
+FROM oven/bun:1.4 AS build
+WORKDIR /src
+COPY backend/package.json backend/bun.lock ./
+RUN bun install --frozen-lockfile
+COPY backend/ ./
+RUN bun run build \
+  && bun build ./src/scripts/migrate.ts --outfile ./dist/migrate.js --target bun --minify
 
-# Expose the port your app runs on
+# ---- runtime ----
+FROM oven/bun:1.4-slim AS release
+WORKDIR /app
+ENV NODE_ENV=production \
+    MIGRATIONS_ROOT=/app
+
+COPY --from=build /src/dist ./dist
+COPY --from=build /src/public ./public
+COPY --from=build /src/static ./static
+COPY --from=build /src/drizzle-sql ./drizzle-sql
+COPY --from=build /src/framework/drizzle-sql ./framework/drizzle-sql
+
 EXPOSE 3000
-
-# Production (GitHub Actions) - includes all build artifacts
-# Expects:
-# - dist/ directory (from backend and frontend builds)
-FROM base AS release-ci
-
-# Copy built artifacts
-COPY dist ./
-
-# Run migrations and start the app
-CMD ["sh", "-c", "bun run framework:migrate && bun run app:migrate && bun ./dist/index.js"]
+CMD ["sh", "-c", "bun ./dist/migrate.js && exec bun ./dist/index.js"]
