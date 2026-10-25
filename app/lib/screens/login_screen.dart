@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/labels.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
@@ -34,11 +35,11 @@ class _LoginScreenState extends State<LoginScreen> {
     final url = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Server'),
+        title: Text(context.l10n.server),
         content: TextField(controller: ctrl, decoration: const InputDecoration(hintText: 'https://…/api/v1')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Abbrechen')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, ctrl.text), child: const Text('Speichern')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(context.l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, ctrl.text), child: Text(context.l10n.save)),
         ],
       ),
     );
@@ -65,10 +66,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const Text('💞', style: TextStyle(fontSize: 72)),
                   const SizedBox(height: 8),
-                  Text('Zweier', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 40)),
+                  Text(context.l10n.appTitle, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 40)),
                   const SizedBox(height: 6),
-                  const Text(
-                    'Eure gemeinsamen Ideen, Ausflüge\nund Reiseträume – an einem Ort.',
+                  Text(
+                    context.l10n.appTagline,
                     textAlign: TextAlign.center,
                     style: TextStyle(color: ZColors.plumSoft, fontSize: 16, height: 1.4),
                   ),
@@ -81,8 +82,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               controller: _email,
                               keyboardType: TextInputType.emailAddress,
                               autofillHints: const [AutofillHints.email],
-                              decoration: const InputDecoration(
-                                  hintText: 'Deine E-Mail', prefixIcon: Icon(Icons.mail_outline_rounded)),
+                              decoration: InputDecoration(
+                                  hintText: context.l10n.emailHint, prefixIcon: const Icon(Icons.mail_outline_rounded)),
                             ),
                             const SizedBox(height: 16),
                             SizedBox(
@@ -97,12 +98,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: _busy
                                     ? const SizedBox(
                                         height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                                    : const Text('Anmelde-Code schicken'),
+                                    : Text(context.l10n.sendCode),
                               ),
                             ),
                           ])
                         : Column(key: const ValueKey('code'), children: [
-                            Text('Wir haben dir einen Code an\n${state.email} geschickt 💌',
+                            Text(context.l10n.codeSentTo(state.email ?? ''),
                                 textAlign: TextAlign.center, style: const TextStyle(height: 1.4)),
                             const SizedBox(height: 16),
                             TextField(
@@ -117,19 +118,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: double.infinity,
                               child: FilledButton(
                                 onPressed: _busy ? null : () => _run(() => state.verifyCode(_code.text)),
-                                child: const Text('Los geht’s'),
+                                child: Text(context.l10n.letsGo),
                               ),
                             ),
                             TextButton(
                                 onPressed: () => setState(() => _codeSent = false),
-                                child: const Text('Andere E-Mail verwenden')),
+                                child: Text(context.l10n.useOtherEmail)),
                           ]),
                   ),
                   const SizedBox(height: 24),
                   TextButton.icon(
                     onPressed: _editServer,
                     icon: const Icon(Icons.dns_outlined, size: 16, color: ZColors.plumSoft),
-                    label: const Text('Server einstellen', style: TextStyle(color: ZColors.plumSoft)),
+                    label: Text(context.l10n.setServer, style: const TextStyle(color: ZColors.plumSoft)),
                   ),
                 ],
               ),

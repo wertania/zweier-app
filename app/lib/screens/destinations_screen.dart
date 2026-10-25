@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/labels.dart';
 import '../models/models.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
@@ -18,11 +19,11 @@ class DestinationsScreen extends StatelessWidget {
     final dreams = state.destinations.where((d) => !d.visited).toList();
     final visited = state.destinations.where((d) => d.visited).toList();
     return Scaffold(
-      appBar: AppBar(title: const Text('Reiseträume')),
+      appBar: AppBar(title: Text(context.l10n.tripDreams)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showDestinationEditor(context),
         icon: const Icon(Icons.add_location_alt_outlined),
-        label: const Text('Ziel'),
+        label: Text(context.l10n.destinationFab),
       ),
       body: RefreshIndicator(
         color: ZColors.rose,
@@ -31,14 +32,14 @@ class DestinationsScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
           children: [
             if (state.destinations.isEmpty)
-              const EmptyState(
+              EmptyState(
                 emoji: '🧭',
-                title: 'Wohin soll’s gehen?',
-                text: 'Sammelt eure Traumziele und hängt an jedes eine Liste mit Dingen, die ihr dort erleben wollt.',
+                title: context.l10n.emptyTripsTitle,
+                text: context.l10n.emptyTripsText,
               ),
             for (final d in dreams) _DestinationCard(destination: d),
             if (visited.isNotEmpty) ...[
-              const SectionLabel('SCHON ERLEBT 💛'),
+              SectionLabel(context.l10n.alreadyExperienced),
               for (final d in visited) _DestinationCard(destination: d),
             ],
           ],
@@ -80,8 +81,8 @@ class _DestinationCard extends StatelessWidget {
                       const SizedBox(height: 8),
                       Wrap(spacing: 6, runSpacing: 4, children: [
                         if (d.plannedFor != null)
-                          Pill('📅 ${DateFormat.yMMMd('de_DE').format(d.plannedFor!)}', color: ZColors.apricot),
-                        Pill('✅ ${d.doneCount}/${d.todoCount} Erlebnisse'),
+                          Pill('📅 ${DateFormat.yMMMd(context.localeTag).format(d.plannedFor!)}', color: ZColors.apricot),
+                        Pill('✅ ${context.l10n.experiences(d.doneCount, d.todoCount)}'),
                       ]),
                       if (d.todoCount > 0) ...[
                         const SizedBox(height: 10),

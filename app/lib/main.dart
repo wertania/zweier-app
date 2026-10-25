@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
+import 'l10n/app_localizations.dart';
 import 'screens/couple_setup_screen.dart';
 import 'screens/home_shell.dart';
 import 'screens/login_screen.dart';
@@ -12,7 +12,7 @@ import 'widgets/common.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('de_DE');
+  await initializeDateFormatting();
   runApp(
     ChangeNotifierProvider(
       create: (_) => AppState()..init(),
@@ -30,13 +30,8 @@ class ZweierApp extends StatelessWidget {
       title: 'Zweier',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(),
-      locale: const Locale('de'),
-      supportedLocales: const [Locale('de')],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       home: Consumer<AppState>(
         builder: (context, state, _) => AnimatedSwitcher(
           duration: const Duration(milliseconds: 400),

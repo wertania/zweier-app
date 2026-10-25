@@ -3,13 +3,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/labels.dart';
 import '../models/models.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import 'idea_editor_sheet.dart';
 
-/// "Was machen wir heute?" – suggestions based on weather and available time.
+/// "What shall we do today?" – suggestions based on weather and available time.
 class TodayScreen extends StatefulWidget {
   const TodayScreen({super.key});
   @override
@@ -31,10 +32,10 @@ class _TodayScreenState extends State<TodayScreen> {
 
   String get _greeting {
     final h = DateTime.now().hour;
-    final wd = DateFormat.EEEE('de_DE').format(DateTime.now());
-    if (h < 11) return 'Guten Morgen, ihr zwei ☕';
-    if (h < 17) return 'Schöner $wd, ihr zwei 🌼';
-    return 'Guten Abend, ihr zwei 🌙';
+    final wd = DateFormat.EEEE(context.localeTag).format(DateTime.now());
+    if (h < 11) return context.l10n.greetingMorning;
+    if (h < 17) return context.l10n.greetingDay(wd);
+    return context.l10n.greetingEvening;
   }
 
   Future<Position?> _position() async {
@@ -83,11 +84,11 @@ class _TodayScreenState extends State<TodayScreen> {
 
   String _dayLabel(DateTime d) {
     final now = DateTime.now();
-    if (DateUtils.isSameDay(d, now)) return 'Heute';
+    if (DateUtils.isSameDay(d, now)) return context.l10n.today;
     if (DateUtils.isSameDay(d, now.add(const Duration(days: 1)))) {
-      return 'Morgen (${DateFormat.E('de_DE').format(d)})';
+      return context.l10n.tomorrowWeekday(DateFormat.E(context.localeTag).format(d));
     }
-    return DateFormat.EEEE('de_DE').format(d);
+    return DateFormat.EEEE(context.localeTag).format(d);
   }
 
   @override
@@ -99,10 +100,10 @@ class _TodayScreenState extends State<TodayScreen> {
         children: [
           Text(_greeting, style: const TextStyle(color: ZColors.plumSoft, fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
-          Text('Was machen wir?', style: Theme.of(context).textTheme.headlineMedium),
+          Text(context.l10n.whatShallWeDo, style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 18),
           _HeroCard(busy: _busy, onTap: _suggest, ideaCount: state.ideas.where((i) => !i.done).length),
-          const SectionLabel('WANN?'),
+          SectionLabel(context.l10n.whenLabel),
           Wrap(spacing: 8, runSpacing: 8, children: [
             for (final d in _dayOptions)
               ChoiceChip(
@@ -111,25 +112,25 @@ class _TodayScreenState extends State<TodayScreen> {
                 onSelected: (_) => setState(() => _day = d),
               ),
           ]),
-          const SectionLabel('WIE VIEL ZEIT HABT IHR?'),
+          SectionLabel(context.l10n.timeLabel),
           Wrap(spacing: 8, runSpacing: 8, children: [
             for (final d in IdeaDuration.values)
               ChoiceChip(
-                label: Text('${d.emoji} ${d.label}'),
+                label: Text('${d.emoji} ${d.label(context)}'),
                 selected: d == _maxDuration,
                 onSelected: (_) => setState(() => _maxDuration = d),
               ),
           ]),
-          const SectionLabel('WETTER'),
+          SectionLabel(context.l10n.weatherLabel),
           Wrap(spacing: 8, runSpacing: 8, children: [
             ChoiceChip(
-              label: const Text('📍 Vorhersage'),
+              label: Text(context.l10n.forecast),
               selected: _weather == null,
               onSelected: (_) => setState(() => _weather = null),
             ),
             for (final w in Weather.values.where((w) => w != Weather.any))
               ChoiceChip(
-                label: Text('${w.emoji} ${w.label}'),
+                label: Text('${w.emoji} ${w.label(context)}'),
                 selected: w == _weather,
                 onSelected: (_) => setState(() => _weather = w),
               ),
@@ -139,10 +140,10 @@ class _TodayScreenState extends State<TodayScreen> {
             _ResultHeader(result: _result!),
             const SizedBox(height: 12),
             if (_result!.suggestions.isEmpty)
-              const EmptyState(
+              EmptyState(
                 emoji: '🫶',
-                title: 'Noch nichts Passendes',
-                text: 'Legt unter „Ideen“ ein paar Lieblingsdinge an – dann haben wir mehr zur Auswahl.',
+                title: context.l10n.nothingFittingTitle,
+                text: context.l10n.nothingFittingText,
               ),
             for (final (i, idea) in _result!.suggestions.indexed)
               TweenAnimationBuilder<double>(
@@ -168,7 +169,7 @@ class _TodayScreenState extends State<TodayScreen> {
                 child: TextButton.icon(
                   onPressed: _busy ? null : _suggest,
                   icon: const Icon(Icons.casino_outlined),
-                  label: const Text('Nochmal würfeln'),
+                  label: Text(context.l10n.rollAgain),
                 ),
               ),
           ],
@@ -207,11 +208,11 @@ class _HeroCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Überrascht euch!',
-                          style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800)),
+                      Text(context.l10n.heroTitle,
+                          style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800)),
                       const SizedBox(height: 6),
                       Text(
-                        'Wir suchen aus euren $ideaCount Ideen das Passende fürs Wetter und eure Zeit.',
+                        context.l10n.heroText(ideaCount),
                         style: TextStyle(color: Colors.white.withValues(alpha: 0.92), height: 1.35),
                       ),
                     ],
@@ -245,14 +246,15 @@ class _ResultHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final f = result.forecast;
     final w = result.weather;
+    final l = context.l10n;
     final text = f != null
-        ? '${w.emoji}  ${w.label} erwartet · ${f.temperatureMin?.round() ?? '?'}–${f.temperatureMax?.round() ?? '?'} °C'
+        ? '${w.emoji}  ${l.weatherExpected(w.label(context), '${f.temperatureMin?.round() ?? '?'}', '${f.temperatureMax?.round() ?? '?'}')}'
         : w == Weather.any
-            ? '🌈  Für jedes Wetter'
-            : '${w.emoji}  ${w.label}';
+            ? '🌈  ${l.anyWeather}'
+            : '${w.emoji}  ${w.label(context)}';
     return Row(
       children: [
-        const Text('Unsere Tipps', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+        Text(context.l10n.ourTips, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
         const Spacer(),
         Pill(text, color: weatherColor(w)),
       ],

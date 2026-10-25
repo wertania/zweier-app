@@ -1,68 +1,109 @@
-# Zweier 💞
+<p align="center">
+  <img src="app/assets/icon/icon.png" width="96" alt="Zweier icon">
+</p>
 
-Repository: https://github.com/wertania/zweier-app
+<h1 align="center">Zweier 💞</h1>
 
-Eine Android-App für Paare: Ideen für die gemeinsame Freizeit sammeln, nach
-**Wetter** und **Dauer** sortieren, **Reiseziele** mit einer kleinen
-Erlebnis-Liste pflegen und sich z. B. Samstagmorgens **Tipps geben lassen** –
-passend zur Wettervorhersage und zur Zeit, die ihr habt.
+<p align="center">
+  A cosy Android app for couples: collect ideas for your time together, keep a list of travel dreams
+  and let the app suggest what to do on a Saturday morning – based on the weather forecast and the time you have.
+</p>
 
-| Login | Heute | Ideen | Reisen | Wir |
+<p align="center">
+  <a href="../../releases/latest">Download the latest APK</a> ·
+  <a href="#self-hosting">Self-hosting</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
+
+| Login | Today | Ideas | Trips | Us |
 |---|---|---|---|---|
-| ![](docs/screenshots/1-login.png) | ![](docs/screenshots/2-heute.png) | ![](docs/screenshots/3-ideen.png) | ![](docs/screenshots/3-reisen.png) | ![](docs/screenshots/3-wir.png) |
+| ![](docs/screenshots/1-login.png) | ![](docs/screenshots/2-today.png) | ![](docs/screenshots/3-ideas.png) | ![](docs/screenshots/4-trips.png) | ![](docs/screenshots/5-us.png) |
 
-## Aufbau
+## Features
 
-- `backend/` – Bun + Hono API auf dem [symbiosika-framework](https://github.com/symbiosika/symbiosika-framework)
-  (erstellt mit `@symbiosika/create-app`, Framework als Submodul in `backend/framework`).
-- `app/` – Flutter-App (Android).
+- **Ideas** for free days, tagged by **weather** (sunny, cloudy, rainy, snow, any) and **duration**
+  (short, half a day, full day, several days). Mark favourites ("heart ideas") and tick off what you did.
+- **Travel destinations** with a planned date and a to-do list of things to experience there – the
+  entries are the same kind of ideas you use for a normal Saturday.
+- **Suggestions**: pick a day and how much time you have; the backend checks the
+  [Open-Meteo](https://open-meteo.com) forecast for your location (no API key) and picks fitting ideas,
+  preferring favourites and pushing recently done ones back.
+- **Shared space for two**: one partner creates the space and invites the other by email.
+- Passwordless login with an email code. English and German UI.
 
-Ein Paar ist ein **Tenant** des Frameworks: einer legt den Bereich an und lädt
-den Partner per E-Mail ein; der Partner nimmt die Einladung in der App an.
+## Repository layout
 
-### Datenmodell
-
-| Tabelle | Inhalt |
+| Path | What |
 |---|---|
-| `app_ideas` | Freizeit-Idee: Titel, Notiz, Emoji, `weather` (sunny/cloudy/rainy/snowy/any), `duration` (short/half_day/full_day/multi_day), Herzensidee, erledigt. Mit `destinationId` ist sie ein Eintrag auf der Erlebnis-Liste eines Reiseziels – gleiche Einträge wie für den normalen Samstag. |
-| `app_destinations` | Reiseziel: Name, Land, Emoji, geplantes Datum, „waren wir schon“. |
+| `app/` | Flutter Android app |
+| `backend/` | Bun + Hono API on the [symbiosika-framework](https://github.com/symbiosika/symbiosika-framework) (git submodule in `backend/framework`, Apache-2.0) |
+| `.github/workflows/` | CI (backend tests, Flutter analyze/test) and the APK release workflow |
 
-### API (`/api/v1`, JWT-geschützt, nur für Mitglieder des Paares)
+### Data model
+
+| Table | Content |
+|---|---|
+| `app_ideas` | Title, notes, emoji, `weather`, `duration`, favourite, done. With a `destinationId` the idea is a to-do of that destination. |
+| `app_destinations` | Name, country, emoji, planned date, visited. |
+
+A couple is a *tenant* of the framework; all data is scoped to it.
+
+### API (`/api/v1`, JWT, tenant members only)
 
 - `GET/POST /tenant/:tenantId/ideas` (`?destinationId=none|<id>&weather=&duration=`), `GET/PUT/DELETE /tenant/:tenantId/ideas/:id`
-- `GET/POST /tenant/:tenantId/destinations` (inkl. `todoCount`/`doneCount`), `GET/PUT/DELETE /tenant/:tenantId/destinations/:id`
-- `GET /tenant/:tenantId/suggestions?maxDuration=&weather=&latitude=&longitude=&date=&count=` –
-  ohne `weather` wird die Vorhersage für den Tag bei [Open-Meteo](https://open-meteo.com) (ohne API-Key) abgefragt.
-  Herzensideen und passendes Wetter werden bevorzugt, kürzlich Erledigtes nach hinten gestellt.
+- `GET/POST /tenant/:tenantId/destinations` (includes `todoCount`/`doneCount`), `GET/PUT/DELETE /tenant/:tenantId/destinations/:id`
+- `GET /tenant/:tenantId/suggestions?maxDuration=&weather=&latitude=&longitude=&date=&count=`
 
-Login in der App per E-Mail-Code (`/user/register` + `/user/request-login-code` + `/user/login-with-code`).
-Dafür muss im Backend SMTP konfiguriert sein (lokal: `SMTP_HOST=console.localhost`, der Code steht dann im Server-Log).
+Authentication, tenants and invitations come from the framework (`/user/request-login-code`,
+`/user/login-with-code`, `/tenant/:id/invite`, …).
 
-## Entwicklung
+## Self-hosting
+
+The app needs a running backend. The APK has no server built in – enter your server URL on the login screen
+(e.g. `https://zweier.example.com/api/v1`). Release builds only talk HTTPS.
 
 ```bash
 git clone --recurse-submodules https://github.com/wertania/zweier-app.git
-
-# Backend
-cd backend && bun install && bun run init
-bun run db:local          # eingebettete Postgres (PGlite), alternativ: bun run docker:up
+cd zweier-app/backend
+bun install
+bun run init              # generates secrets into .env
+# configure POSTGRES_* and SMTP_* in .env (login codes are sent by email)
 bun run migrate
-bun run dev               # http://localhost:3000
-bun run test:local        # Tests gegen eingebettete DB
-
-# App
-cd ../app
-flutter pub get
-flutter run                                                     # Emulator: Backend unter http://10.0.2.2:3000/api/v1
-flutter run --dart-define=API_BASE_URL=https://dein-server/api/v1
-flutter build apk --dart-define=API_BASE_URL=https://dein-server/api/v1
+bun run build && bun ./dist/index.js
 ```
 
-Die Server-URL lässt sich auch in der App auf dem Login-Bildschirm ändern.
+The `Dockerfile` in the repository root runs a pre-built `dist/` and applies migrations on start.
 
-## Framework aktualisieren
+## Development
 
 ```bash
-git submodule update --remote backend/framework
-cd backend && bun run sync-deps && bun run sync-skills && bun install
+# backend
+cd backend
+bun install && bun run init
+bun run db:local          # embedded Postgres (PGlite); or `bun run docker:up`
+bun run migrate
+bun run dev               # http://localhost:3000, SMTP_HOST=console.localhost prints login codes to the log
+bun run test:app          # app tests against an embedded database (test:local = incl. framework)
+
+# app
+cd app
+flutter pub get
+flutter run               # emulator default backend: http://10.0.2.2:3000/api/v1
+flutter run --dart-define=API_BASE_URL=https://your-server/api/v1
 ```
+
+Translations live in `app/lib/l10n/app_*.arb` – adding a language is a new ARB file.
+
+## Releasing
+
+Push a tag like `v1.0.0`; the [release workflow](.github/workflows/release.yml) builds the APK and attaches it to a
+GitHub release. To sign with your own key (needed for in-place updates), add these repository secrets:
+`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
+Without them the APK is signed with a throwaway debug key. The optional repository variable `API_BASE_URL`
+sets a default server URL in the app.
+
+Locally, put the same values into `app/android/key.properties` (`storeFile`, `storePassword`, `keyAlias`, `keyPassword`).
+
+## License
+
+[MIT](LICENSE). The bundled framework submodule is licensed under Apache-2.0.

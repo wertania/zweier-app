@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/labels.dart';
 import '../models/models.dart';
 import '../state/app_state.dart';
 import '../widgets/common.dart';
@@ -57,7 +58,6 @@ class _DestinationEditorState extends State<_DestinationEditor> {
       initialDate: _draft.plannedFor ?? now,
       firstDate: DateTime(now.year - 5),
       lastDate: DateTime(now.year + 10),
-      locale: const Locale('de'),
     );
     if (picked != null) setState(() => _draft.plannedFor = picked);
   }
@@ -71,7 +71,7 @@ class _DestinationEditorState extends State<_DestinationEditor> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(widget.destination == null ? 'Neues Reiseziel' : 'Reiseziel bearbeiten',
+            Text(widget.destination == null ? context.l10n.newDestination : context.l10n.editDestination,
                 style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 12),
             EmojiPickerRow(
@@ -84,13 +84,13 @@ class _DestinationEditorState extends State<_DestinationEditor> {
               controller: _name,
               autofocus: widget.destination == null,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(hintText: 'Ort, z. B. Lissabon'),
+              decoration: InputDecoration(hintText: context.l10n.placeHint),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: _country,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(hintText: 'Land (optional)'),
+              decoration: InputDecoration(hintText: context.l10n.countryHint),
             ),
             const SizedBox(height: 10),
             TextField(
@@ -98,17 +98,17 @@ class _DestinationEditorState extends State<_DestinationEditor> {
               maxLines: 3,
               minLines: 2,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(hintText: 'Warum wollen wir dahin?'),
+              decoration: InputDecoration(hintText: context.l10n.whyHint),
             ),
             const SizedBox(height: 10),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Text('📅', style: TextStyle(fontSize: 24)),
               title: Text(_draft.plannedFor == null
-                  ? 'Noch kein Termin'
-                  : DateFormat.yMMMMd('de_DE').format(_draft.plannedFor!)),
+                  ? context.l10n.noDateYet
+                  : DateFormat.yMMMMd(context.localeTag).format(_draft.plannedFor!)),
               trailing: _draft.plannedFor == null
-                  ? TextButton(onPressed: _pickDate, child: const Text('Festlegen'))
+                  ? TextButton(onPressed: _pickDate, child: Text(context.l10n.setDate))
                   : IconButton(
                       onPressed: () => setState(() => _draft.plannedFor = null),
                       icon: const Icon(Icons.close_rounded)),
@@ -118,10 +118,10 @@ class _DestinationEditorState extends State<_DestinationEditor> {
               contentPadding: EdgeInsets.zero,
               value: _draft.visited,
               onChanged: (v) => setState(() => _draft.visited = v),
-              title: const Text('Waren wir schon 💛', style: TextStyle(fontWeight: FontWeight.w600)),
+              title: Text(context.l10n.beenThere, style: const TextStyle(fontWeight: FontWeight.w600)),
             ),
             const SizedBox(height: 12),
-            FilledButton(onPressed: _busy ? null : _save, child: const Text('Speichern')),
+            FilledButton(onPressed: _busy ? null : _save, child: Text(context.l10n.save)),
           ],
         ),
       ),

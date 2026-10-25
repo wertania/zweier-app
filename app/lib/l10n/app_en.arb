@@ -1,0 +1,187 @@
+{
+  "@@locale": "en",
+  "appTitle": "Zweier",
+  "weatherSunny": "Sunny",
+  "weatherCloudy": "Cloudy",
+  "weatherRainy": "Rainy",
+  "weatherSnowy": "Snow",
+  "weatherAny": "Any",
+  "durationShort": "Short",
+  "durationHalfDay": "Half a day",
+  "durationFullDay": "Full day",
+  "durationMultiDay": "Several days",
+  "errorPrefix": "Oops: {error}",
+  "@errorPrefix": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "Cancel",
+  "save": "Save",
+  "keep": "Keep",
+  "delete": "Delete",
+  "appTagline": "Your shared ideas, outings\nand travel dreams – in one place.",
+  "emailHint": "Your email",
+  "sendCode": "Send login code",
+  "codeSentTo": "We sent a code to\n{email} 💌",
+  "@codeSentTo": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "letsGo": "Let's go",
+  "useOtherEmail": "Use a different email",
+  "setServer": "Set server",
+  "server": "Server",
+  "coupleSetupTitle": "Your shared place",
+  "coupleSetupText": "Create your space and invite your sweetheart afterwards – or accept an invitation.",
+  "invitationsForYou": "INVITATIONS FOR YOU",
+  "sharedSpace": "Shared space",
+  "youWereInvited": "You have been invited",
+  "accept": "Accept",
+  "createNew": "CREATE NEW",
+  "coupleNameHint": "e.g. Anna & Ben",
+  "coupleNameDefault": "The two of us",
+  "createCouple": "Create our space",
+  "navToday": "Today",
+  "navIdeas": "Ideas",
+  "navTrips": "Trips",
+  "navUs": "Us",
+  "greetingMorning": "Good morning, you two ☕",
+  "greetingDay": "Happy {weekday}, you two 🌼",
+  "@greetingDay": {
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingEvening": "Good evening, you two 🌙",
+  "whatShallWeDo": "What shall we do?",
+  "whenLabel": "WHEN?",
+  "timeLabel": "HOW MUCH TIME DO YOU HAVE?",
+  "weatherLabel": "WEATHER",
+  "forecast": "📍 Forecast",
+  "today": "Today",
+  "tomorrowWeekday": "Tomorrow ({weekday})",
+  "@tomorrowWeekday": {
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "heroTitle": "Surprise yourselves!",
+  "heroText": "We pick from your {count} ideas what fits the weather and your time.",
+  "@heroText": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ourTips": "Our tips",
+  "weatherExpected": "{weather} expected · {min}–{max} °C",
+  "@weatherExpected": {
+    "placeholders": {
+      "weather": {
+        "type": "String"
+      },
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "anyWeather": "For any weather",
+  "nothingFittingTitle": "Nothing fitting yet",
+  "nothingFittingText": "Add a few favourite things under “Ideas” – then there is more to choose from.",
+  "rollAgain": "Roll again",
+  "newIdea": "New idea",
+  "todoQuestion": "What do we want to do there?",
+  "editIdea": "Edit idea",
+  "deleteConfirmTitle": "Really delete?",
+  "deleteConfirmText": "“{title}” will be removed.",
+  "@deleteConfirmText": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "ideaTitleHint": "e.g. Picnic at the lake",
+  "ideaNotesHint": "Notes, address, what to bring …",
+  "goodFor": "GOOD FOR",
+  "durationLabel": "DURATION",
+  "heartIdea": "Heart idea ❤️",
+  "heartIdeaHint": "Preferred in suggestions",
+  "saveChanges": "Save changes",
+  "ourIdeas": "Our ideas",
+  "showDone": "Show done",
+  "ideaFab": "Idea",
+  "emptyIdeasTitle": "Your idea garden is still empty",
+  "emptyIdeasText": "Collect everything you love doing together – from movie night to a long hike.",
+  "nothingFound": "Nothing found",
+  "tryOtherFilter": "Try a different filter.",
+  "wasLovely": "That was lovely! 💕",
+  "tripDreams": "Travel dreams",
+  "destinationFab": "Destination",
+  "emptyTripsTitle": "Where to next?",
+  "emptyTripsText": "Collect your dream destinations and attach a list of things you want to experience there.",
+  "alreadyExperienced": "ALREADY BEEN 💛",
+  "experiences": "{done}/{total} experiences",
+  "@experiences": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "newDestination": "New destination",
+  "editDestination": "Edit destination",
+  "placeHint": "Place, e.g. Lisbon",
+  "countryHint": "Country (optional)",
+  "whyHint": "Why do we want to go there?",
+  "noDateYet": "No date yet",
+  "setDate": "Set",
+  "beenThere": "We've been there 💛",
+  "deleteDestinationTitle": "Delete {name}?",
+  "@deleteDestinationTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteDestinationText": "The list with all experiences will be deleted as well.",
+  "experienceFab": "Experience",
+  "emptyTodosTitle": "What do we want to experience there?",
+  "emptyTodosText": "Write down the great things you could do there – just like your ideas at home.",
+  "stillAhead": "STILL AHEAD",
+  "alreadyDone": "ALREADY DONE 💕",
+  "inviteTitle": "Invite your sweetheart 💌",
+  "partnerEmailHint": "Your partner's email",
+  "invite": "Invite",
+  "invitationSent": "Invitation is on its way 💌",
+  "statIdeas": "Ideas",
+  "statDone": "Done",
+  "statTraveled": "Travelled",
+  "usTwo": "THE TWO OF US",
+  "thatsYou": "That's you",
+  "yourLove": "Your sweetheart",
+  "invitePartner": "Invite your partner",
+  "invitePartnerHint": "Then you plan together",
+  "settings": "SETTINGS",
+  "logout": "Log out",
+  "madeWithLove": "Made with ❤️ for the two of you",
+  "us": "Us"
+}

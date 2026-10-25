@@ -49,8 +49,8 @@ class ApiClient {
     }
     if (res.statusCode >= 400) {
       final msg = json is Map
-          ? (json['error'] ?? json['message'] ?? 'Fehler ${res.statusCode}').toString()
-          : 'Fehler ${res.statusCode}';
+          ? (json['error'] ?? json['message'] ?? 'Error ${res.statusCode}').toString()
+          : 'Error ${res.statusCode}';
       throw ApiException(res.statusCode, msg);
     }
     // app routes wrap their payload as {success, data}
@@ -80,7 +80,7 @@ class ApiClient {
   Future<String> loginWithCode(String email, String code) async {
     final res = await _send('POST', '/user/login-with-code', body: {'email': email, 'code': code});
     final t = res is Map ? res['token'] as String? : null;
-    if (t == null) throw ApiException(400, 'Der Code stimmt leider nicht.');
+    if (t == null) throw ApiException(400, 'Invalid code');
     return t;
   }
 

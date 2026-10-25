@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/labels.dart';
 import '../models/models.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
@@ -8,7 +9,7 @@ import '../widgets/common.dart';
 import 'destination_editor_sheet.dart';
 import 'idea_editor_sheet.dart';
 
-/// A destination with its to-do list ("was wir dort Tolles machen könnten").
+/// A destination with its to-do list of things to experience there.
 class DestinationDetailScreen extends StatefulWidget {
   const DestinationDetailScreen({super.key, required this.destinationId});
   final String destinationId;
@@ -44,11 +45,11 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('${d.name} löschen?'),
-        content: const Text('Die Liste mit allen Erlebnissen wird ebenfalls gelöscht.'),
+        title: Text(context.l10n.deleteDestinationTitle(d.name)),
+        content: Text(context.l10n.deleteDestinationText),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Behalten')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Löschen')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(context.l10n.keep)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(context.l10n.delete)),
         ],
       ),
     );
@@ -75,7 +76,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showIdeaEditor(context, destinationId: d.id),
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Erlebnis'),
+        label: Text(context.l10n.experienceFab),
       ),
       body: CustomScrollView(
         slivers: [
@@ -115,14 +116,14 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
               if (_todos == null)
                 const Padding(padding: EdgeInsets.all(40), child: Center(child: HeartLoader())),
               if (_todos != null && todos.isEmpty)
-                const EmptyState(
+                EmptyState(
                   emoji: '📝',
-                  title: 'Was wollen wir dort erleben?',
-                  text: 'Schreibt auf, was ihr dort Tolles machen könntet – genau wie eure Ideen für zu Hause.',
+                  title: context.l10n.emptyTodosTitle,
+                  text: context.l10n.emptyTodosText,
                 ),
-              if (open.isNotEmpty) const SectionLabel('NOCH VOR UNS'),
+              if (open.isNotEmpty) SectionLabel(context.l10n.stillAhead),
               for (final t in open) _todoTile(t),
-              if (done.isNotEmpty) const SectionLabel('SCHON GEMACHT 💕'),
+              if (done.isNotEmpty) SectionLabel(context.l10n.alreadyDone),
               for (final t in done) _todoTile(t),
             ]),
           ),

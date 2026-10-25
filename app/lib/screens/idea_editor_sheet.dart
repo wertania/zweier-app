@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/labels.dart';
 import '../models/models.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
@@ -56,11 +57,11 @@ class _IdeaEditorState extends State<_IdeaEditor> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Wirklich löschen?'),
-        content: Text('„${_draft.title}“ wird entfernt.'),
+        title: Text(context.l10n.deleteConfirmTitle),
+        content: Text(context.l10n.deleteConfirmText(_draft.title)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Behalten')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Löschen')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(context.l10n.keep)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(context.l10n.delete)),
         ],
       ),
     );
@@ -81,8 +82,8 @@ class _IdeaEditorState extends State<_IdeaEditor> {
             Row(children: [
               Text(
                 widget.idea == null
-                    ? (_isTodo ? 'Was wollen wir dort machen?' : 'Neue Idee')
-                    : 'Idee bearbeiten',
+                    ? (_isTodo ? context.l10n.todoQuestion : context.l10n.newIdea)
+                    : context.l10n.editIdea,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const Spacer(),
@@ -100,7 +101,7 @@ class _IdeaEditorState extends State<_IdeaEditor> {
               controller: _title,
               autofocus: widget.idea == null,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(hintText: 'z. B. Picknick am See'),
+              decoration: InputDecoration(hintText: context.l10n.ideaTitleHint),
             ),
             const SizedBox(height: 10),
             TextField(
@@ -108,22 +109,22 @@ class _IdeaEditorState extends State<_IdeaEditor> {
               maxLines: 3,
               minLines: 2,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(hintText: 'Notizen, Adresse, was mitnehmen …'),
+              decoration: InputDecoration(hintText: context.l10n.ideaNotesHint),
             ),
-            const SectionLabel('PASST BEI'),
+            SectionLabel(context.l10n.goodFor),
             Wrap(spacing: 8, runSpacing: 8, children: [
               for (final w in Weather.values)
                 ChoiceChip(
-                  label: Text('${w.emoji} ${w.label}'),
+                  label: Text('${w.emoji} ${w.label(context)}'),
                   selected: _draft.weather == w,
                   onSelected: (_) => setState(() => _draft.weather = w),
                 ),
             ]),
-            const SectionLabel('DAUER'),
+            SectionLabel(context.l10n.durationLabel),
             Wrap(spacing: 8, runSpacing: 8, children: [
               for (final d in IdeaDuration.values)
                 ChoiceChip(
-                  label: Text('${d.emoji} ${d.label}'),
+                  label: Text('${d.emoji} ${d.label(context)}'),
                   selected: _draft.duration == d,
                   onSelected: (_) => setState(() => _draft.duration = d),
                 ),
@@ -133,13 +134,13 @@ class _IdeaEditorState extends State<_IdeaEditor> {
               contentPadding: EdgeInsets.zero,
               value: _draft.favorite,
               onChanged: (v) => setState(() => _draft.favorite = v),
-              title: const Text('Herzensidee ❤️', style: TextStyle(fontWeight: FontWeight.w600)),
-              subtitle: const Text('Wird bei Vorschlägen bevorzugt'),
+              title: Text(context.l10n.heartIdea, style: const TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: Text(context.l10n.heartIdeaHint),
             ),
             const SizedBox(height: 12),
             FilledButton(
               onPressed: _busy ? null : _save,
-              child: Text(widget.idea == null ? 'Speichern' : 'Änderungen speichern'),
+              child: Text(widget.idea == null ? context.l10n.save : context.l10n.saveChanges),
             ),
           ],
         ),

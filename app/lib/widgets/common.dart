@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/labels.dart';
 import '../models/models.dart';
 import '../theme.dart';
 
@@ -162,9 +163,9 @@ class IdeaCard extends StatelessWidget {
                       ],
                       const SizedBox(height: 8),
                       Wrap(spacing: 6, runSpacing: 4, children: [
-                        Pill('${idea.weather.emoji} ${idea.weather.label}',
+                        Pill('${idea.weather.emoji} ${idea.weather.label(context)}',
                             color: weatherColor(idea.weather)),
-                        Pill('${idea.duration.emoji} ${idea.duration.label}',
+                        Pill('${idea.duration.emoji} ${idea.duration.label(context)}',
                             color: ZColors.apricot),
                       ]),
                     ],
@@ -189,7 +190,7 @@ class IdeaCard extends StatelessWidget {
 
 void showError(BuildContext context, Object error) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: Text('Hoppla: $error'),
+    content: Text(context.l10n.errorPrefix('$error')),
     backgroundColor: ZColors.roseDark,
     behavior: SnackBarBehavior.floating,
   ));

@@ -1,13 +1,12 @@
 /// Weather categories an idea fits. Mirrors the backend enum.
 enum Weather {
-  sunny('Sonne', '☀️'),
-  cloudy('Wolken', '⛅'),
-  rainy('Regen', '🌧️'),
-  snowy('Schnee', '❄️'),
-  any('Egal', '🌈');
+  sunny('☀️'),
+  cloudy('⛅'),
+  rainy('🌧️'),
+  snowy('❄️'),
+  any('🌈');
 
-  const Weather(this.label, this.emoji);
-  final String label;
+  const Weather(this.emoji);
   final String emoji;
 
   static Weather fromName(String? name) =>
@@ -16,15 +15,13 @@ enum Weather {
 
 /// Rough duration of an idea, from short to long. Mirrors the backend enum.
 enum IdeaDuration {
-  short('short', 'Kurz', '1–2 Std.', '⏱️'),
-  halfDay('half_day', 'Halber Tag', 'ein paar Stunden', '🕐'),
-  fullDay('full_day', 'Ganzer Tag', 'von früh bis spät', '🌞'),
-  multiDay('multi_day', 'Mehrere Tage', 'Wochenende & mehr', '🧳');
+  short('short', '⏱️'),
+  halfDay('half_day', '🕐'),
+  fullDay('full_day', '🌞'),
+  multiDay('multi_day', '🧳');
 
-  const IdeaDuration(this.apiName, this.label, this.hint, this.emoji);
+  const IdeaDuration(this.apiName, this.emoji);
   final String apiName;
-  final String label;
-  final String hint;
   final String emoji;
 
   static IdeaDuration fromName(String? name) => IdeaDuration.values

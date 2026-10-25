@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/labels.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
@@ -35,22 +36,22 @@ class _UsScreenState extends State<UsScreen> {
     final mail = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Schatz einladen 💌'),
+        title: Text(context.l10n.inviteTitle),
         content: TextField(
           controller: ctrl,
           keyboardType: TextInputType.emailAddress,
-          decoration: const InputDecoration(hintText: 'E-Mail deines Partners'),
+          decoration: InputDecoration(hintText: context.l10n.partnerEmailHint),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Abbrechen')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, ctrl.text.trim()), child: const Text('Einladen')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(context.l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, ctrl.text.trim()), child: Text(context.l10n.invite)),
         ],
       ),
     );
     if (mail == null || mail.isEmpty || !mounted) return;
     try {
       await context.read<AppState>().api.invitePartner(mail);
-      if (mounted) showLove(context, 'Einladung ist unterwegs 💌');
+      if (mounted) showLove(context, context.l10n.invitationSent);
     } catch (e) {
       if (mounted) showError(context, e);
     }
@@ -65,16 +66,16 @@ class _UsScreenState extends State<UsScreen> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         children: [
-          Text(state.coupleName ?? 'Wir', style: Theme.of(context).textTheme.headlineMedium),
+          Text(state.coupleName ?? context.l10n.us, style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 18),
           Row(children: [
-            _Stat(emoji: '💡', value: state.ideas.length, label: 'Ideen'),
+            _Stat(emoji: '💡', value: state.ideas.length, label: context.l10n.statIdeas),
             const SizedBox(width: 10),
-            _Stat(emoji: '💕', value: doneIdeas, label: 'Erlebt'),
+            _Stat(emoji: '💕', value: doneIdeas, label: context.l10n.statDone),
             const SizedBox(width: 10),
-            _Stat(emoji: '✈️', value: visited, label: 'Gereist'),
+            _Stat(emoji: '✈️', value: visited, label: context.l10n.statTraveled),
           ]),
-          const SectionLabel('WIR ZWEI'),
+          SectionLabel(context.l10n.usTwo),
           Card(
             child: Column(children: [
               if (_members == null) const Padding(padding: EdgeInsets.all(20), child: HeartLoader(size: 28)),
@@ -83,37 +84,37 @@ class _UsScreenState extends State<UsScreen> {
                   leading: const CircleAvatar(backgroundColor: ZColors.blush, child: Text('🙂')),
                   title: Text((m['userEmail'] ?? m['email'] ?? '').toString(),
                       style: const TextStyle(fontWeight: FontWeight.w600)),
-                  subtitle: Text(m['userEmail'] == state.email ? 'Das bist du' : 'Dein Schatz'),
+                  subtitle: Text(m['userEmail'] == state.email ? context.l10n.thatsYou : context.l10n.yourLove),
                 ),
               if ((_members?.length ?? 0) < 2)
                 ListTile(
                   leading: const CircleAvatar(backgroundColor: ZColors.apricot, child: Icon(Icons.add, color: ZColors.rose)),
-                  title: const Text('Partner:in einladen', style: TextStyle(fontWeight: FontWeight.w600)),
-                  subtitle: const Text('Dann plant ihr gemeinsam'),
+                  title: Text(context.l10n.invitePartner, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: Text(context.l10n.invitePartnerHint),
                   onTap: _invite,
                 ),
             ]),
           ),
-          const SectionLabel('EINSTELLUNGEN'),
+          SectionLabel(context.l10n.settings),
           Card(
             child: Column(children: [
               ListTile(
                 leading: const Icon(Icons.dns_outlined),
-                title: const Text('Server'),
+                title: Text(context.l10n.server),
                 subtitle: Text(state.api.baseUrl),
               ),
               ListTile(
                 leading: const Icon(Icons.logout_rounded, color: ZColors.roseDark),
-                title: const Text('Abmelden'),
+                title: Text(context.l10n.logout),
                 subtitle: Text(state.email ?? ''),
                 onTap: state.logout,
               ),
             ]),
           ),
           const SizedBox(height: 24),
-          const Center(
-            child: Text('Mit ❤️ für euch zwei gemacht',
-                style: TextStyle(color: ZColors.plumSoft, fontSize: 12)),
+          Center(
+            child: Text(context.l10n.madeWithLove,
+                style: const TextStyle(color: ZColors.plumSoft, fontSize: 12)),
           ),
         ],
       ),

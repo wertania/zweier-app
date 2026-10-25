@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/labels.dart';
 import '../models/models.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
@@ -31,10 +32,10 @@ class _IdeasScreenState extends State<IdeasScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Unsere Ideen'),
+        title: Text(context.l10n.ourIdeas),
         actions: [
           IconButton(
-            tooltip: 'Erledigte zeigen',
+            tooltip: context.l10n.showDone,
             onPressed: () => setState(() => _showDone = !_showDone),
             icon: Icon(_showDone ? Icons.check_circle_rounded : Icons.check_circle_outline_rounded),
           ),
@@ -43,7 +44,7 @@ class _IdeasScreenState extends State<IdeasScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showIdeaEditor(context),
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Idee'),
+        label: Text(context.l10n.ideaFab),
       ),
       body: RefreshIndicator(
         color: ZColors.rose,
@@ -60,7 +61,7 @@ class _IdeasScreenState extends State<IdeasScreen> {
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: FilterChip(
-                        label: Text('${w.emoji} ${w.label}'),
+                        label: Text('${w.emoji} ${w.label(context)}'),
                         selected: _weather == w,
                         onSelected: (s) => setState(() => _weather = s ? w : null),
                       ),
@@ -78,7 +79,7 @@ class _IdeasScreenState extends State<IdeasScreen> {
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: FilterChip(
-                        label: Text('${d.emoji} ${d.label}'),
+                        label: Text('${d.emoji} ${d.label(context)}'),
                         selected: _duration == d,
                         onSelected: (s) => setState(() => _duration = s ? d : null),
                       ),
@@ -90,10 +91,8 @@ class _IdeasScreenState extends State<IdeasScreen> {
             if (filtered.isEmpty)
               EmptyState(
                 emoji: state.ideas.isEmpty ? '🌱' : '🔍',
-                title: state.ideas.isEmpty ? 'Euer Ideen-Garten ist noch leer' : 'Nichts gefunden',
-                text: state.ideas.isEmpty
-                    ? 'Sammelt hier alles, was ihr gern zusammen machen wollt – vom Kinoabend bis zur Wanderung.'
-                    : 'Probiert einen anderen Filter.',
+                title: state.ideas.isEmpty ? context.l10n.emptyIdeasTitle : context.l10n.nothingFound,
+                text: state.ideas.isEmpty ? context.l10n.emptyIdeasText : context.l10n.tryOtherFilter,
               ),
             for (final idea in filtered)
               Padding(
@@ -103,7 +102,7 @@ class _IdeasScreenState extends State<IdeasScreen> {
                   direction: DismissDirection.startToEnd,
                   confirmDismiss: (_) async {
                     await state.toggleDone(idea);
-                    if (context.mounted && idea.done) showLove(context, 'Schön war’s! 💕');
+                    if (context.mounted && idea.done) showLove(context, context.l10n.wasLovely);
                     return false;
                   },
                   background: Container(

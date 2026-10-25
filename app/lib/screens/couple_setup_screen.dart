@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/labels.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
@@ -13,7 +14,7 @@ class CoupleSetupScreen extends StatefulWidget {
 }
 
 class _CoupleSetupScreenState extends State<CoupleSetupScreen> {
-  final _name = TextEditingController(text: 'Wir zwei');
+  late final _name = TextEditingController(text: context.l10n.coupleNameDefault);
   bool _busy = false;
 
   Future<void> _run(Future<void> Function() action) async {
@@ -39,16 +40,16 @@ class _CoupleSetupScreenState extends State<CoupleSetupScreen> {
         children: [
           const Text('🏡', style: TextStyle(fontSize: 64), textAlign: TextAlign.center),
           const SizedBox(height: 8),
-          Text('Euer gemeinsamer Ort',
+          Text(context.l10n.coupleSetupTitle,
               textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 8),
-          const Text(
-            'Leg euren Bereich an und lade danach deinen Schatz ein – oder nimm eine Einladung an.',
+          Text(
+            context.l10n.coupleSetupText,
             textAlign: TextAlign.center,
             style: TextStyle(color: ZColors.plumSoft, height: 1.4),
           ),
           if (state.invitations.isNotEmpty) ...[
-            const SectionLabel('EINLADUNGEN FÜR DICH'),
+            SectionLabel(context.l10n.invitationsForYou),
             for (final inv in state.invitations)
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
@@ -56,26 +57,26 @@ class _CoupleSetupScreenState extends State<CoupleSetupScreen> {
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                     leading: const Text('💌', style: TextStyle(fontSize: 28)),
-                    title: Text(inv.tenantName ?? 'Gemeinsamer Bereich',
+                    title: Text(inv.tenantName ?? context.l10n.sharedSpace,
                         style: const TextStyle(fontWeight: FontWeight.w700)),
-                    subtitle: const Text('Du wurdest eingeladen'),
+                    subtitle: Text(context.l10n.youWereInvited),
                     trailing: FilledButton(
                       onPressed: _busy ? null : () => _run(() => state.acceptInvitation(inv)),
-                      child: const Text('Annehmen'),
+                      child: Text(context.l10n.accept),
                     ),
                   ),
                 ),
               ),
           ],
-          const SectionLabel('NEU ANLEGEN'),
+          SectionLabel(context.l10n.createNew),
           TextField(
             controller: _name,
-            decoration: const InputDecoration(hintText: 'z. B. Anna & Ben', prefixIcon: Icon(Icons.favorite_border)),
+            decoration: InputDecoration(hintText: context.l10n.coupleNameHint, prefixIcon: const Icon(Icons.favorite_border)),
           ),
           const SizedBox(height: 16),
           FilledButton(
             onPressed: _busy ? null : () => _run(() => state.createCouple(_name.text.trim())),
-            child: const Text('Unseren Bereich anlegen'),
+            child: Text(context.l10n.createCouple),
           ),
         ],
       ),

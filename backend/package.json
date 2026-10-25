@@ -1,5 +1,5 @@
 {
-  "name": "app-backend",
+  "name": "zweier-backend",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -53,6 +53,7 @@
     "build": "bun build ./src/index.ts --outdir ./dist --target bun --minify",
     "typecheck": "tsc --noEmit",
     "test:local": "bun run ./framework/.scripts/test-local.ts",
+    "test:app": "bun run ./framework/.scripts/test-local.ts ./src",
     "db:local": "bun run ./framework/.scripts/local-db-server.ts",
     "db:query": "bun run ./framework/.scripts/db-query.ts",
     "clean": "rm -rf ./lib/",

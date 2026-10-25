@@ -1,4 +1,4 @@
-# app – Backend
+# Zweier – Backend
 
 Bun + Hono API server built on the symbiosika-framework (`./framework`, git submodule).
 
