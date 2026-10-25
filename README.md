@@ -22,7 +22,7 @@
 ## Features
 
 - **Ideas** for free days, tagged by one or more **weathers** (sunny, cloudy, rainy, snow, any), **duration**
-  (short, half a day, full day, several days) **time of day** (daytime, evening) and optional **categories** (hustle & city, outdoor, with friends, culture),
+  (short, half a day, full day, several days), **time of day** (daytime, evening) and optional **categories** (hustle & city, outdoor, with friends, culture),
   with an optional **place**
   that opens in your maps app. Mark favourites ("heart ideas") and tick off what you did.
 - **Travel destinations** with a planned date and a to-do list of things to experience there – the
