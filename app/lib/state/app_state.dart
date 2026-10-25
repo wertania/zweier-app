@@ -1,0 +1,144 @@
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../api/api_client.dart';
+import '../models/models.dart';
+
+const _defaultBaseUrl = String.fromEnvironment(
+  'API_BASE_URL',
+  // 10.0.2.2 is the host machine from inside the Android emulator
+  defaultValue: 'http://10.0.2.2:3000/api/v1',
+);
+
+enum Stage { loading, loggedOut, needsCouple, ready }
+
+/// Central app state: session, our couple space, ideas and destinations.
+class AppState extends ChangeNotifier {
+  final api = ApiClient(baseUrl: _defaultBaseUrl);
+  late SharedPreferences _prefs;
+
+  Stage stage = Stage.loading;
+  String? email;
+  String? coupleName;
+  List<Invitation> invitations = [];
+  List<Idea> ideas = [];
+  List<Destination> destinations = [];
+
+  Future<void> init() async {
+    _prefs = await SharedPreferences.getInstance();
+    api.baseUrl = _prefs.getString('baseUrl') ?? _defaultBaseUrl;
+    api.token = _prefs.getString('token');
+    email = _prefs.getString('email');
+    if (api.token == null) {
+      _setStage(Stage.loggedOut);
+      return;
+    }
+    try {
+      await _resolveCouple();
+    } on ApiException catch (e) {
+      if (e.statusCode == 401) {
+        await logout();
+      } else {
+        _setStage(Stage.loggedOut);
+      }
+    } catch (_) {
+      _setStage(Stage.loggedOut);
+    }
+  }
+
+  void _setStage(Stage s) {
+    stage = s;
+    notifyListeners();
+  }
+
+  Future<void> setBaseUrl(String url) async {
+    api.baseUrl = url.trim();
+    await _prefs.setString('baseUrl', api.baseUrl);
+    notifyListeners();
+  }
+
+  Future<void> requestCode(String mail) async {
+    email = mail.trim().toLowerCase();
+    await api.requestLoginCode(email!);
+  }
+
+  Future<void> verifyCode(String code) async {
+    api.token = await api.loginWithCode(email!, code.trim());
+    await _prefs.setString('token', api.token!);
+    await _prefs.setString('email', email!);
+    await _resolveCouple();
+  }
+
+  Future<void> _resolveCouple() async {
+    final tenants = await api.myTenants();
+    if (tenants.isEmpty) {
+      invitations = await api.myInvitations();
+      _setStage(Stage.needsCouple);
+      return;
+    }
+    api.tenantId = tenants.first['tenantId'] as String;
+    coupleName = tenants.first['name'] as String?;
+    await refreshAll();
+    _setStage(Stage.ready);
+  }
+
+  Future<void> createCouple(String name) async {
+    await api.createTenant(name);
+    await _resolveCouple();
+  }
+
+  Future<void> acceptInvitation(Invitation inv) async {
+    await api.acceptInvitation(inv);
+    await _resolveCouple();
+  }
+
+  Future<void> logout() async {
+    api.token = null;
+    api.tenantId = null;
+    await _prefs.remove('token');
+    ideas = [];
+    destinations = [];
+    _setStage(Stage.loggedOut);
+  }
+
+  // ---------- data ----------
+
+  Future<void> refreshAll() async {
+    final results = await Future.wait([api.ideas(), api.destinations()]);
+    ideas = results[0] as List<Idea>;
+    destinations = results[1] as List<Destination>;
+    notifyListeners();
+  }
+
+  Future<void> saveIdea(Idea idea) async {
+    await api.saveIdea(idea);
+    await refreshAll();
+  }
+
+  Future<void> toggleDone(Idea idea) async {
+    idea.done = !idea.done;
+    notifyListeners();
+    await saveIdea(idea);
+  }
+
+  Future<void> toggleFavorite(Idea idea) async {
+    idea.favorite = !idea.favorite;
+    notifyListeners();
+    await saveIdea(idea);
+  }
+
+  Future<void> deleteIdea(Idea idea) async {
+    await api.deleteIdea(idea.id!);
+    await refreshAll();
+  }
+
+  Future<void> saveDestination(Destination d) async {
+    await api.saveDestination(d);
+    await refreshAll();
+  }
+
+  Future<void> deleteDestination(Destination d) async {
+    await api.deleteDestination(d.id!);
+    await refreshAll();
+  }
+}
