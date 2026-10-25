@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:zweier/api/api_client.dart';
 import 'package:zweier/models/models.dart';
+import 'package:zweier/update_check.dart';
 
 void main() {
   test('idea json round trip keeps api enum names', () {
@@ -77,5 +78,22 @@ void main() {
     expect(idea.sortedCategories, [Category.city, Category.friends]);
     expect(idea.toJson()['categories'], ['city', 'friends']);
     expect(Idea(title: 'x').categories, isEmpty);
+  });
+
+  test('version comparison', () {
+    expect(compareVersions('1.2.0', '1.10.0'), lessThan(0));
+    expect(compareVersions('1.3.0', '1.3.0+7'), 0);
+    expect(compareVersions('2.0.0', '1.9.9'), greaterThan(0));
+  });
+
+  test('update decision', () {
+    const url = 'https://example.com/latest';
+    expect(UpdateInfo.fromServer('1.3.0', {'latestVersion': '1.3.0', 'downloadUrl': url}), isNull);
+    expect(UpdateInfo.fromServer('1.3.0', {'latestVersion': null}), isNull);
+    final optional = UpdateInfo.fromServer('1.3.0', {'latestVersion': '1.4.0', 'downloadUrl': url})!;
+    expect(optional.required, isFalse);
+    expect(optional.latest, '1.4.0');
+    final required = UpdateInfo.fromServer('1.1.0', {'latestVersion': '1.4.0', 'minVersion': '1.2.0'})!;
+    expect(required.required, isTrue);
   });
 }

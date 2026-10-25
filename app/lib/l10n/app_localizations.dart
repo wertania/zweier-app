@@ -853,6 +853,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'optional'**
   String get optional;
+
+  /// No description provided for @updateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please update 💞'**
+  String get updateTitle;
+
+  /// No description provided for @updateText.
+  ///
+  /// In en, this message translates to:
+  /// **'Zweier {latest} is ready – you have {current}. Grab the new version for the latest features.'**
+  String updateText(String latest, String current);
+
+  /// No description provided for @updateRequiredText.
+  ///
+  /// In en, this message translates to:
+  /// **'This version no longer works with the server. Please install Zweier {latest}.'**
+  String updateRequiredText(String latest);
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update now'**
+  String get updateNow;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
+
+  /// No description provided for @offlineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t reach the server'**
+  String get offlineTitle;
+
+  /// No description provided for @offlineText.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection – your data is safe. We\'ll try again when you tap the button.'**
+  String get offlineText;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgain;
 }
 
 class _AppLocalizationsDelegate

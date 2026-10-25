@@ -411,4 +411,33 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get optional => 'optional';
+
+  @override
+  String get updateTitle => 'Mach ein Update bitte 💞';
+
+  @override
+  String updateText(String latest, String current) {
+    return 'Zweier $latest ist da – du hast noch $current. Hol dir die neue Version mit allen Neuerungen.';
+  }
+
+  @override
+  String updateRequiredText(String latest) {
+    return 'Diese Version funktioniert nicht mehr mit dem Server. Bitte installiere Zweier $latest.';
+  }
+
+  @override
+  String get updateNow => 'Jetzt aktualisieren';
+
+  @override
+  String get later => 'Später';
+
+  @override
+  String get offlineTitle => 'Server nicht erreichbar';
+
+  @override
+  String get offlineText =>
+      'Prüf deine Internetverbindung – eure Daten sind sicher. Tipp auf den Button, um es nochmal zu versuchen.';
+
+  @override
+  String get tryAgain => 'Nochmal versuchen';
 }

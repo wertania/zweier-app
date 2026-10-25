@@ -411,4 +411,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get optional => 'optional';
+
+  @override
+  String get updateTitle => 'Please update 💞';
+
+  @override
+  String updateText(String latest, String current) {
+    return 'Zweier $latest is ready – you have $current. Grab the new version for the latest features.';
+  }
+
+  @override
+  String updateRequiredText(String latest) {
+    return 'This version no longer works with the server. Please install Zweier $latest.';
+  }
+
+  @override
+  String get updateNow => 'Update now';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get offlineTitle => 'Can\'t reach the server';
+
+  @override
+  String get offlineText =>
+      'Check your internet connection – your data is safe. We\'ll try again when you tap the button.';
+
+  @override
+  String get tryAgain => 'Try again';
 }

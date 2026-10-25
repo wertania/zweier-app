@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/api_client.dart';
 import '../models/models.dart';
+import '../update_check.dart';
 
 /// Default backend. Override at build time with `--dart-define=SERVER_URL=…`
 /// (e.g. `http://10.0.2.2:3000` for a local backend from the Android emulator).
@@ -11,7 +12,8 @@ const _defaultServerUrl = String.fromEnvironment(
   defaultValue: 'https://zweier-app.resomo.de',
 );
 
-enum Stage { loading, loggedOut, needsCouple, ready }
+/// `offline`: logged in, but the server could not be reached or failed.
+enum Stage { loading, loggedOut, offline, needsCouple, ready }
 
 /// Central app state: session, our couple space, ideas and destinations.
 class AppState extends ChangeNotifier {
@@ -25,6 +27,9 @@ class AppState extends ChangeNotifier {
   List<Idea> ideas = [];
   List<Destination> destinations = [];
 
+  /// Set when the server knows a newer app version.
+  UpdateInfo? update;
+
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
     // 'baseUrl' is the key used by 1.0.0 (stored with the API path)
@@ -36,22 +41,41 @@ class AppState extends ChangeNotifier {
       _setStage(Stage.loggedOut);
       return;
     }
+    await reconnect();
+  }
+
+  /// Loads our space again; an expired session logs out, anything else
+  /// (no network, server error) keeps the session and shows a retry screen.
+  Future<void> reconnect() async {
+    _setStage(Stage.loading);
     try {
       await _resolveCouple();
     } on ApiException catch (e) {
       if (e.statusCode == 401) {
         await logout();
       } else {
-        _setStage(Stage.loggedOut);
+        lastError = e.message;
+        _setStage(Stage.offline);
       }
-    } catch (_) {
-      _setStage(Stage.loggedOut);
+    } catch (e) {
+      lastError = '$e';
+      _setStage(Stage.offline);
     }
   }
+
+  /// Message of the last failed [reconnect].
+  String? lastError;
 
   void _setStage(Stage s) {
     stage = s;
     notifyListeners();
+  }
+
+  /// Asks the server whether a newer app version exists.
+  Future<UpdateInfo?> refreshUpdate() async {
+    update = await checkForUpdate(api);
+    notifyListeners();
+    return update;
   }
 
   Future<void> setServerUrl(String url) async {

@@ -31,6 +31,8 @@
   [Open-Meteo](https://open-meteo.com) forecast for your location (no API key) and picks fitting ideas,
   preferring favourites and pushing recently done ones back.
 - **Shared space for two**: one partner creates the space and invites the other by email.
+- **Update hint**: the app asks the server for the newest version (`GET /api/v1/app/version`, taken from the latest
+  GitHub release or `APP_LATEST_VERSION`) and asks you to update; with `APP_MIN_VERSION` the update becomes mandatory.
 - Passwordless login with an email code. English and German UI.
 
 ## Repository layout

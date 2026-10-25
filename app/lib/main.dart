@@ -6,8 +6,10 @@ import 'l10n/app_localizations.dart';
 import 'screens/couple_setup_screen.dart';
 import 'screens/home_shell.dart';
 import 'screens/login_screen.dart';
+import 'screens/offline_screen.dart';
 import 'state/app_state.dart';
 import 'theme.dart';
+import 'update_check.dart';
 import 'widgets/common.dart';
 
 Future<void> main() async {
@@ -32,15 +34,20 @@ class ZweierApp extends StatelessWidget {
       theme: buildTheme(),
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      home: Consumer<AppState>(
-        builder: (context, state, _) => AnimatedSwitcher(
-          duration: const Duration(milliseconds: 400),
-          child: switch (state.stage) {
-            Stage.loading => const Scaffold(body: Center(child: HeartLoader())),
-            Stage.loggedOut => const LoginScreen(),
-            Stage.needsCouple => const CoupleSetupScreen(),
-            Stage.ready => const HomeShell(),
-          },
+      home: UpdateWatcher(
+        child: Consumer<AppState>(
+          builder: (context, state, _) => AnimatedSwitcher(
+            duration: const Duration(milliseconds: 400),
+            child: switch (state.stage) {
+              Stage.loading => const Scaffold(
+                body: Center(child: HeartLoader()),
+              ),
+              Stage.loggedOut => const LoginScreen(),
+              Stage.offline => const OfflineScreen(),
+              Stage.needsCouple => const CoupleSetupScreen(),
+              Stage.ready => const HomeShell(),
+            },
+          ),
         ),
       ),
     );

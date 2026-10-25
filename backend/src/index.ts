@@ -4,6 +4,7 @@ import defineChatRoutes from "./routes/tenant/[tenantId]/chat";
 import { defineIdeaRoutes } from "./routes/tenant/[tenantId]/ideas";
 import { defineDestinationRoutes } from "./routes/tenant/[tenantId]/destinations";
 import { defineSuggestionRoutes } from "./routes/tenant/[tenantId]/suggestions";
+import { defineAppRoutes } from "./routes/app";
 import {
   inviteToCouple,
   inviteToCoupleWhenUserExists,
@@ -25,6 +26,14 @@ const server = defineServer({
   customDbSchema: {
     ...appDbSchema,
   },
+  customHonoApps: [
+    {
+      baseRoute: "",
+      app: (app) => {
+        defineAppRoutes(app);
+      },
+    },
+  ],
   customHonoAppsWithAuth: [
     {
       baseRoute: "",

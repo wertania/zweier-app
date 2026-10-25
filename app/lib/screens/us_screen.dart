@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../l10n/labels.dart';
 import '../state/app_state.dart';
+import '../update_check.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 
@@ -98,6 +99,7 @@ class _UsScreenState extends State<UsScreen> {
           SectionLabel(context.l10n.settings),
           Card(
             child: Column(children: [
+              if (state.update != null) UpdateTile(update: state.update!),
               ListTile(
                 leading: const Icon(Icons.dns_outlined),
                 title: Text(context.l10n.server),

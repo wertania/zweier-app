@@ -109,6 +109,10 @@ class ApiClient {
   Future<Map<String, dynamic>> me() async =>
       (await _send('GET', '/user/me')) as Map<String, dynamic>;
 
+  /// Newest app version known to the server (public, no login needed).
+  Future<Map<String, dynamic>> appVersion() async =>
+      (await _send('GET', '/app/version')) as Map<String, dynamic>;
+
   // ---------- Couple (= tenant) ----------
 
   Future<List<Map<String, dynamic>>> myTenants() async =>

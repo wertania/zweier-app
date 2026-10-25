@@ -125,5 +125,13 @@
   "categoryCulture": "Kultur",
   "categoryLabel": "KATEGORIE",
   "moodLabel": "WORAUF HABT IHR LUST?",
-  "optional": "optional"
+  "optional": "optional",
+  "updateTitle": "Mach ein Update bitte 💞",
+  "updateText": "Zweier {latest} ist da – du hast noch {current}. Hol dir die neue Version mit allen Neuerungen.",
+  "updateRequiredText": "Diese Version funktioniert nicht mehr mit dem Server. Bitte installiere Zweier {latest}.",
+  "updateNow": "Jetzt aktualisieren",
+  "later": "Später",
+  "offlineTitle": "Server nicht erreichbar",
+  "offlineText": "Prüf deine Internetverbindung – eure Daten sind sicher. Tipp auf den Button, um es nochmal zu versuchen.",
+  "tryAgain": "Nochmal versuchen"
 }
