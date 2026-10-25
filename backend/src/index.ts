@@ -4,6 +4,10 @@ import defineChatRoutes from "./routes/tenant/[tenantId]/chat";
 import { defineIdeaRoutes } from "./routes/tenant/[tenantId]/ideas";
 import { defineDestinationRoutes } from "./routes/tenant/[tenantId]/destinations";
 import { defineSuggestionRoutes } from "./routes/tenant/[tenantId]/suggestions";
+import {
+  inviteToCouple,
+  inviteToCoupleWhenUserExists,
+} from "./lib/email-templates";
 
 const server = defineServer({
   port: 3000,
@@ -14,6 +18,10 @@ const server = defineServer({
   magicLoginVerifyUrl: "/magic-login-verify.html",
   staticPublicDataPath: "./public",
   staticPrivateDataPath: "./static",
+  emailTemplates: {
+    inviteToOrganization: inviteToCouple,
+    inviteToOrganizationWhenUserExists: inviteToCoupleWhenUserExists,
+  },
   customDbSchema: {
     ...appDbSchema,
   },
