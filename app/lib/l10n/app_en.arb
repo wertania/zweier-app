@@ -183,5 +183,12 @@
   "settings": "SETTINGS",
   "logout": "Log out",
   "madeWithLove": "Made with ❤️ for the two of you",
-  "us": "Us"
+  "us": "Us",
+  "timeAny": "Anytime",
+  "timeDay": "Daytime",
+  "timeEvening": "Evening",
+  "timeOfDayLabel": "TIME OF DAY",
+  "locationHint": "Place (optional), e.g. city park",
+  "weatherMultiHint": "Pick as many as you like",
+  "openInMaps": "Open in maps"
 }

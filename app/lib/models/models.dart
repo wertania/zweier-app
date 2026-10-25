@@ -28,25 +28,43 @@ enum IdeaDuration {
       .firstWhere((d) => d.apiName == name, orElse: () => IdeaDuration.halfDay);
 }
 
+/// When an idea can be done. Mirrors the backend enum.
+enum DayTime {
+  any('🕰️'),
+  day('🌤️'),
+  evening('🌙');
+
+  const DayTime(this.emoji);
+  final String emoji;
+
+  static DayTime fromName(String? name) =>
+      DayTime.values.firstWhere((t) => t.name == name, orElse: () => DayTime.any);
+}
+
 class Idea {
   Idea({
     this.id,
     required this.title,
     this.description,
     this.emoji = '💡',
-    this.weather = Weather.any,
+    Set<Weather>? weathers,
     this.duration = IdeaDuration.halfDay,
+    this.timeOfDay = DayTime.any,
+    this.location,
     this.favorite = false,
     this.done = false,
     this.destinationId,
-  });
+  }) : weathers = weathers ?? {Weather.any};
 
   final String? id;
   String title;
   String? description;
   String emoji;
-  Weather weather;
+  /// All weathers the idea fits; `{Weather.any}` = every weather.
+  Set<Weather> weathers;
   IdeaDuration duration;
+  DayTime timeOfDay;
+  String? location;
   bool favorite;
   bool done;
   String? destinationId;
@@ -56,19 +74,46 @@ class Idea {
         title: j['title'] as String? ?? '',
         description: j['description'] as String?,
         emoji: j['emoji'] as String? ?? '💡',
-        weather: Weather.fromName(j['weather'] as String?),
+        weathers: j['weathers'] is List
+            ? (j['weathers'] as List).map((w) => Weather.fromName(w as String?)).toSet()
+            : {Weather.fromName(j['weather'] as String?)},
         duration: IdeaDuration.fromName(j['duration'] as String?),
+        timeOfDay: DayTime.fromName(j['timeOfDay'] as String?),
+        location: j['location'] as String?,
         favorite: j['favorite'] as bool? ?? false,
         done: j['done'] as bool? ?? false,
         destinationId: j['destinationId'] as String?,
       );
 
+  bool get anyWeather => weathers.isEmpty || weathers.contains(Weather.any);
+
+  /// True if the idea can be done in [weather].
+  bool fitsWeather(Weather weather) =>
+      weather == Weather.any || anyWeather || weathers.contains(weather);
+
+  /// Selects or deselects [weather]; "any" and specific weathers exclude each other.
+  void toggleWeather(Weather weather) {
+    if (weather == Weather.any) {
+      weathers = {Weather.any};
+      return;
+    }
+    final next = {...weathers}..remove(Weather.any);
+    next.contains(weather) ? next.remove(weather) : next.add(weather);
+    weathers = next.isEmpty ? {Weather.any} : next;
+  }
+
+  /// Weathers in display order.
+  List<Weather> get sortedWeathers =>
+      Weather.values.where(weathers.contains).toList();
+
   Map<String, dynamic> toJson() => {
         'title': title,
         'description': description,
         'emoji': emoji,
-        'weather': weather.name,
+        'weathers': weathers.map((w) => w.name).toList(),
         'duration': duration.apiName,
+        'timeOfDay': timeOfDay.name,
+        'location': location,
         'favorite': favorite,
         'done': done,
         'destinationId': destinationId,

@@ -21,8 +21,9 @@
 
 ## Features
 
-- **Ideas** for free days, tagged by **weather** (sunny, cloudy, rainy, snow, any) and **duration**
-  (short, half a day, full day, several days). Mark favourites ("heart ideas") and tick off what you did.
+- **Ideas** for free days, tagged by one or more **weathers** (sunny, cloudy, rainy, snow, any), **duration**
+  (short, half a day, full day, several days) and **time of day** (daytime, evening), with an optional **place**
+  that opens in your maps app. Mark favourites ("heart ideas") and tick off what you did.
 - **Travel destinations** with a planned date and a to-do list of things to experience there – the
   entries are the same kind of ideas you use for a normal Saturday.
 - **Suggestions**: pick a day and how much time you have; the backend checks the
@@ -44,16 +45,16 @@
 
 | Table | Content |
 |---|---|
-| `app_ideas` | Title, notes, emoji, `weather`, `duration`, favourite, done. With a `destinationId` the idea is a to-do of that destination. |
+| `app_ideas` | Title, notes, emoji, `location`, `weathers` (list), `duration`, `timeOfDay`, favourite, done. With a `destinationId` the idea is a to-do of that destination. |
 | `app_destinations` | Name, country, emoji, planned date, visited. |
 
 A couple is a *tenant* of the framework; all data is scoped to it.
 
 ### API (`/api/v1`, JWT, tenant members only)
 
-- `GET/POST /tenant/:tenantId/ideas` (`?destinationId=none|<id>&weather=&duration=`), `GET/PUT/DELETE /tenant/:tenantId/ideas/:id`
+- `GET/POST /tenant/:tenantId/ideas` (`?destinationId=none|<id>&weather=&duration=&timeOfDay=`), `GET/PUT/DELETE /tenant/:tenantId/ideas/:id`
 - `GET/POST /tenant/:tenantId/destinations` (includes `todoCount`/`doneCount`), `GET/PUT/DELETE /tenant/:tenantId/destinations/:id`
-- `GET /tenant/:tenantId/suggestions?maxDuration=&weather=&latitude=&longitude=&date=&count=`
+- `GET /tenant/:tenantId/suggestions?maxDuration=&timeOfDay=&weather=&latitude=&longitude=&date=&count=`
 
 Authentication, tenants and invitations come from the framework (`/user/request-login-code`,
 `/user/login-with-code`, `/tenant/:id/invite`, …).

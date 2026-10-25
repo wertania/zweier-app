@@ -111,5 +111,12 @@
   "settings": "EINSTELLUNGEN",
   "logout": "Abmelden",
   "madeWithLove": "Mit ❤️ für euch zwei gemacht",
-  "us": "Wir"
+  "us": "Wir",
+  "timeAny": "Egal",
+  "timeDay": "Tagsüber",
+  "timeEvening": "Abends",
+  "timeOfDayLabel": "TAGESZEIT",
+  "locationHint": "Ort (optional), z. B. Stadtpark",
+  "weatherMultiHint": "Mehrere möglich",
+  "openInMaps": "In Karten öffnen"
 }

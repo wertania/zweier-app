@@ -21,6 +21,7 @@ class _TodayScreenState extends State<TodayScreen> {
   late DateTime _day = _defaultDay();
   IdeaDuration _maxDuration = IdeaDuration.fullDay;
   Weather? _weather; // null = use the forecast
+  DayTime _dayTime = DateTime.now().hour >= 17 ? DayTime.evening : DayTime.day;
   bool _busy = false;
   SuggestionResult? _result;
 
@@ -60,6 +61,7 @@ class _TodayScreenState extends State<TodayScreen> {
       final res = await state.api.suggestions(
         weather: _weather,
         maxDuration: _maxDuration,
+        timeOfDay: _dayTime,
         latitude: pos?.latitude,
         longitude: pos?.longitude,
         date: _day,
@@ -110,6 +112,15 @@ class _TodayScreenState extends State<TodayScreen> {
                 label: Text(_dayLabel(d)),
                 selected: DateUtils.isSameDay(d, _day),
                 onSelected: (_) => setState(() => _day = d),
+              ),
+          ]),
+          const SizedBox(height: 8),
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            for (final t in [DayTime.day, DayTime.evening])
+              ChoiceChip(
+                label: Text('${t.emoji} ${t.label(context)}'),
+                selected: _dayTime == t,
+                onSelected: (_) => setState(() => _dayTime = t),
               ),
           ]),
           SectionLabel(context.l10n.timeLabel),

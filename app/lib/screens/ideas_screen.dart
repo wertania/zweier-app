@@ -18,6 +18,7 @@ class IdeasScreen extends StatefulWidget {
 class _IdeasScreenState extends State<IdeasScreen> {
   Weather? _weather;
   IdeaDuration? _duration;
+  bool _eveningOnly = false;
   bool _showDone = false;
 
   @override
@@ -25,7 +26,8 @@ class _IdeasScreenState extends State<IdeasScreen> {
     final state = context.watch<AppState>();
     final filtered = state.ideas.where((i) {
       if (!_showDone && i.done) return false;
-      if (_weather != null && i.weather != _weather && i.weather != Weather.any) return false;
+      if (_weather != null && !i.fitsWeather(_weather!)) return false;
+      if (_eveningOnly && i.timeOfDay == DayTime.day) return false;
       if (_duration != null && i.duration != _duration) return false;
       return true;
     }).toList();
@@ -75,6 +77,14 @@ class _IdeasScreenState extends State<IdeasScreen> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: FilterChip(
+                      label: Text('${DayTime.evening.emoji} ${DayTime.evening.label(context)}'),
+                      selected: _eveningOnly,
+                      onSelected: (s) => setState(() => _eveningOnly = s),
+                    ),
+                  ),
                   for (final d in IdeaDuration.values)
                     Padding(
                       padding: const EdgeInsets.only(right: 8),

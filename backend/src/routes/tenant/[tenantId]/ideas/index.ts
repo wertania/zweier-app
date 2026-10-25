@@ -8,12 +8,13 @@ import { HTTPException } from "hono/http-exception";
 import { isTenantMember } from "@framework/routes/tenant";
 import { validator } from "hono-openapi";
 import * as v from "valibot";
-import { durationTypes, weatherTypes } from "../../../../db/schema";
+import { durationTypes, timeOfDayTypes, weatherTypes } from "../../../../db/schema";
 import {
   createIdea,
   deleteIdea,
   getIdeaById,
   getIdeas,
+  toIdeaResponse,
   updateIdea,
 } from "../../../../lib/ideas";
 
@@ -41,13 +42,14 @@ app.get(
       destinationId: v.optional(v.string()),
       weather: v.optional(v.picklist(weatherTypes)),
       duration: v.optional(v.picklist(durationTypes)),
+      timeOfDay: v.optional(v.picklist(timeOfDayTypes)),
     })
   ),
   async (c) => {
     const { tenantId } = c.req.valid("param");
     try {
       const data = await getIdeas(tenantId, c.req.valid("query"));
-      return c.json({ success: true, data });
+      return c.json({ success: true, data: data.map(toIdeaResponse) });
     } catch (error) {
       return handleError(c, error, "Failed to fetch ideas");
     }
@@ -64,7 +66,7 @@ app.get(
     try {
       const data = await getIdeaById(tenantId, id);
       if (!data) return c.json({ success: false, error: "Idea not found" }, 404);
-      return c.json({ success: true, data });
+      return c.json({ success: true, data: toIdeaResponse(data) });
     } catch (error) {
       return handleError(c, error, "Failed to fetch idea");
     }
@@ -80,7 +82,7 @@ app.post(
     const { tenantId } = c.req.valid("param");
     try {
       const data = await createIdea(tenantId, await c.req.json());
-      return c.json({ success: true, data });
+      return c.json({ success: true, data: toIdeaResponse(data) });
     } catch (error) {
       return handleError(c, error, "Failed to create idea");
     }
@@ -97,7 +99,7 @@ app.put(
     try {
       const data = await updateIdea(tenantId, id, await c.req.json());
       if (!data) return c.json({ success: false, error: "Idea not found" }, 404);
-      return c.json({ success: true, data });
+      return c.json({ success: true, data: toIdeaResponse(data) });
     } catch (error) {
       return handleError(c, error, "Failed to update idea");
     }

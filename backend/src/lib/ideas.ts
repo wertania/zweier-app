@@ -1,5 +1,5 @@
 import { getDb } from "@framework/lib/db/db-connection";
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, arrayOverlaps, desc, eq, inArray, isNull } from "drizzle-orm";
 import * as v from "valibot";
 import {
   ideas,
@@ -7,6 +7,8 @@ import {
   ideasUpdateSchema,
   durationTypes,
   type DurationType,
+  type IdeasSelect,
+  type TimeOfDayType,
   type WeatherType,
 } from "../db/schema";
 import { getDestinationById } from "./destinations";
@@ -14,9 +16,54 @@ import { getDestinationById } from "./destinations";
 export type IdeaFilter = {
   /** "none" = only ideas without destination, a uuid = only that destination */
   destinationId?: string;
+  /** Ideas that fit this weather (including "any weather" ideas). */
   weather?: WeatherType;
   duration?: DurationType;
+  /** Ideas that fit this time of day (including "any time" ideas). */
+  timeOfDay?: TimeOfDayType;
 };
+
+/** An idea as returned by the API. */
+export type IdeaResponse = IdeasSelect & {
+  /** @deprecated single weather for app versions before 1.2 – use `weathers` */
+  weather: WeatherType;
+};
+
+export function toIdeaResponse(idea: IdeasSelect): IdeaResponse {
+  return {
+    ...idea,
+    weather: idea.weathers.length === 1 ? idea.weathers[0]! : "any",
+  };
+}
+
+/** True if the idea can be done in this weather. */
+export function fitsWeather(idea: Pick<IdeasSelect, "weathers">, weather: WeatherType) {
+  return weather === "any" || idea.weathers.includes("any") || idea.weathers.includes(weather);
+}
+
+/** True if the idea can be done at this time of day. */
+export function fitsTimeOfDay(idea: Pick<IdeasSelect, "timeOfDay">, timeOfDay: TimeOfDayType) {
+  return timeOfDay === "any" || idea.timeOfDay === "any" || idea.timeOfDay === timeOfDay;
+}
+
+/**
+ * Accepts the old single `weather` field (app versions before 1.2) and
+ * normalizes `weathers`: no duplicates, "any" wins, empty means "any".
+ */
+function normalizeInput(data: unknown) {
+  const { weather, weathers, ...rest } = (data ?? {}) as Record<string, unknown>;
+  const list = Array.isArray(weathers)
+    ? weathers
+    : typeof weather === "string"
+      ? [weather]
+      : undefined;
+  if (list === undefined) return rest;
+  const unique = [...new Set(list)];
+  return {
+    ...rest,
+    weathers: unique.length === 0 || unique.includes("any") ? ["any"] : unique,
+  };
+}
 
 export async function getIdeas(tenantId: string, filter: IdeaFilter = {}) {
   const conditions = [eq(ideas.tenantId, tenantId)];
@@ -25,8 +72,13 @@ export async function getIdeas(tenantId: string, filter: IdeaFilter = {}) {
   } else if (filter.destinationId) {
     conditions.push(eq(ideas.destinationId, filter.destinationId));
   }
-  if (filter.weather) conditions.push(eq(ideas.weather, filter.weather));
+  if (filter.weather && filter.weather !== "any") {
+    conditions.push(arrayOverlaps(ideas.weathers, [filter.weather, "any"]));
+  }
   if (filter.duration) conditions.push(eq(ideas.duration, filter.duration));
+  if (filter.timeOfDay && filter.timeOfDay !== "any") {
+    conditions.push(inArray(ideas.timeOfDay, [filter.timeOfDay, "any"]));
+  }
 
   return await getDb()
     .select()
@@ -54,7 +106,7 @@ async function assertDestinationOfTenant(tenantId: string, destinationId: unknow
 
 export async function createIdea(tenantId: string, data: unknown) {
   const validated = v.parse(ideasInsertSchema, {
-    ...(data as Record<string, unknown>),
+    ...normalizeInput(data),
     tenantId,
   });
   await assertDestinationOfTenant(tenantId, validated.destinationId);
@@ -63,7 +115,7 @@ export async function createIdea(tenantId: string, data: unknown) {
 }
 
 export async function updateIdea(tenantId: string, id: string, data: unknown) {
-  const { tenantId: _t, id: _i, ...rest } = data as Record<string, unknown>;
+  const { tenantId: _t, id: _i, ...rest } = normalizeInput(data);
   const validated = v.parse(ideasUpdateSchema, rest);
   await assertDestinationOfTenant(tenantId, validated.destinationId);
   const now = new Date().toISOString();

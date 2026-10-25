@@ -769,6 +769,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Us'**
   String get us;
+
+  /// No description provided for @timeAny.
+  ///
+  /// In en, this message translates to:
+  /// **'Anytime'**
+  String get timeAny;
+
+  /// No description provided for @timeDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Daytime'**
+  String get timeDay;
+
+  /// No description provided for @timeEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening'**
+  String get timeEvening;
+
+  /// No description provided for @timeOfDayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TIME OF DAY'**
+  String get timeOfDayLabel;
+
+  /// No description provided for @locationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Place (optional), e.g. city park'**
+  String get locationHint;
+
+  /// No description provided for @weatherMultiHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick as many as you like'**
+  String get weatherMultiHint;
+
+  /// No description provided for @openInMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in maps'**
+  String get openInMaps;
 }
 
 class _AppLocalizationsDelegate

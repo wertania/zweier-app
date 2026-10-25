@@ -15,7 +15,7 @@ import {
 } from "drizzle-valibot";
 import { tenants } from "@framework/lib/db/schema/users";
 import { pgBaseTable } from "../schema-base";
-import { weatherEnum, durationEnum } from "./enums";
+import { weatherEnum, durationEnum, timeOfDayEnum } from "./enums";
 import { destinations } from "./destinations";
 
 /**
@@ -35,8 +35,15 @@ export const ideas = pgBaseTable(
     title: varchar("title", { length: 255 }).notNull(),
     description: text("description"),
     emoji: varchar("emoji", { length: 16 }).notNull().default("💡"),
-    weather: weatherEnum("weather").notNull().default("any"),
+    /** Optional place, free text (e.g. "Stadtpark" or an address). */
+    location: varchar("location", { length: 255 }),
+    /** All weathers the idea fits; ["any"] = every weather. */
+    weathers: weatherEnum("weathers")
+      .array()
+      .notNull()
+      .default(sql`'{any}'`),
     duration: durationEnum("duration").notNull().default("half_day"),
+    timeOfDay: timeOfDayEnum("time_of_day").notNull().default("any"),
     favorite: boolean("favorite").notNull().default(false),
     done: boolean("done").notNull().default(false),
     doneAt: timestamp("done_at", { mode: "string" }),

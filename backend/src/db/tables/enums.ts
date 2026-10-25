@@ -10,3 +10,8 @@ export type WeatherType = (typeof weatherTypes)[number];
 export const durationTypes = ["short", "half_day", "full_day", "multi_day"] as const;
 export const durationEnum = pgEnum(`${PREFIX}duration`, durationTypes);
 export type DurationType = (typeof durationTypes)[number];
+
+/** When an idea can be done. "any" fits day and evening. */
+export const timeOfDayTypes = ["any", "day", "evening"] as const;
+export const timeOfDayEnum = pgEnum(`${PREFIX}time_of_day`, timeOfDayTypes);
+export type TimeOfDayType = (typeof timeOfDayTypes)[number];

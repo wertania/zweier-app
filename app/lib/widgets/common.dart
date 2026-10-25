@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/labels.dart';
 import '../models/models.dart';
@@ -139,7 +140,7 @@ class IdeaCard extends StatelessWidget {
                           : null,
                     ),
                   ),
-                EmojiBubble(idea.emoji, color: weatherColor(idea.weather)),
+                EmojiBubble(idea.emoji, color: weatherColor(idea.sortedWeathers.first)),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
@@ -161,12 +162,19 @@ class IdeaCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(color: ZColors.plumSoft, fontSize: 13)),
                       ],
+                      if (idea.location?.isNotEmpty ?? false) ...[
+                        const SizedBox(height: 4),
+                        LocationLink(idea.location!),
+                      ],
                       const SizedBox(height: 8),
                       Wrap(spacing: 6, runSpacing: 4, children: [
-                        Pill('${idea.weather.emoji} ${idea.weather.label(context)}',
-                            color: weatherColor(idea.weather)),
+                        for (final w in idea.sortedWeathers)
+                          Pill('${w.emoji} ${w.label(context)}', color: weatherColor(w)),
                         Pill('${idea.duration.emoji} ${idea.duration.label(context)}',
                             color: ZColors.apricot),
+                        if (idea.timeOfDay != DayTime.any)
+                          Pill('${idea.timeOfDay.emoji} ${idea.timeOfDay.label(context)}',
+                              color: ZColors.lavender),
                       ]),
                     ],
                   ),
@@ -186,6 +194,45 @@ class IdeaCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// "📍 place" – opens the place in the maps app.
+class LocationLink extends StatelessWidget {
+  const LocationLink(this.location, {super.key});
+  final String location;
+
+  Future<void> _open() async {
+    final uri = Uri.https('www.google.com', '/maps/search/', {'api': '1', 'query': location});
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: _open,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            const Icon(Icons.place_outlined, size: 15, color: ZColors.roseDark),
+            const SizedBox(width: 3),
+            Flexible(
+              child: Text(
+                location,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                semanticsLabel: '${context.l10n.openInMaps}: $location',
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: ZColors.roseDark,
+                  fontWeight: FontWeight.w600,
+                  decoration: TextDecoration.underline,
+                  decorationColor: ZColors.peach,
+                ),
+              ),
+            ),
+          ]),
+        ),
+      );
 }
 
 void showError(BuildContext context, Object error) {

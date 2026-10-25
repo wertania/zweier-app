@@ -22,6 +22,17 @@ extension WeatherLabel on Weather {
   }
 }
 
+extension DayTimeLabel on DayTime {
+  String label(BuildContext context) {
+    final l = context.l10n;
+    return switch (this) {
+      DayTime.any => l.timeAny,
+      DayTime.day => l.timeDay,
+      DayTime.evening => l.timeEvening,
+    };
+  }
+}
+
 extension DurationLabel on IdeaDuration {
   String label(BuildContext context) {
     final l = context.l10n;

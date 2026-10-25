@@ -369,4 +369,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get us => 'Us';
+
+  @override
+  String get timeAny => 'Anytime';
+
+  @override
+  String get timeDay => 'Daytime';
+
+  @override
+  String get timeEvening => 'Evening';
+
+  @override
+  String get timeOfDayLabel => 'TIME OF DAY';
+
+  @override
+  String get locationHint => 'Place (optional), e.g. city park';
+
+  @override
+  String get weatherMultiHint => 'Pick as many as you like';
+
+  @override
+  String get openInMaps => 'Open in maps';
 }

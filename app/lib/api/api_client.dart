@@ -177,6 +177,7 @@ class ApiClient {
   Future<SuggestionResult> suggestions({
     Weather? weather,
     IdeaDuration? maxDuration,
+    DayTime? timeOfDay,
     double? latitude,
     double? longitude,
     DateTime? date,
@@ -185,6 +186,7 @@ class ApiClient {
     final res = await _send('GET', '$_t/suggestions', query: {
       'weather': weather?.name,
       'maxDuration': maxDuration?.apiName,
+      'timeOfDay': timeOfDay?.name,
       'latitude': latitude?.toString(),
       'longitude': longitude?.toString(),
       'date': date?.toIso8601String().substring(0, 10),

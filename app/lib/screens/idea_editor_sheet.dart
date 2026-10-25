@@ -34,6 +34,7 @@ class _IdeaEditorState extends State<_IdeaEditor> {
       : Idea.fromJson({'id': widget.idea!.id, ...widget.idea!.toJson()});
   late final _title = TextEditingController(text: _draft.title);
   late final _desc = TextEditingController(text: _draft.description ?? '');
+  late final _location = TextEditingController(text: _draft.location ?? '');
   bool _busy = false;
 
   bool get _isTodo => _draft.destinationId != null;
@@ -42,7 +43,8 @@ class _IdeaEditorState extends State<_IdeaEditor> {
     if (_title.text.trim().isEmpty) return;
     _draft
       ..title = _title.text.trim()
-      ..description = _desc.text.trim().isEmpty ? null : _desc.text.trim();
+      ..description = _desc.text.trim().isEmpty ? null : _desc.text.trim()
+      ..location = _location.text.trim().isEmpty ? null : _location.text.trim();
     setState(() => _busy = true);
     try {
       await context.read<AppState>().saveIdea(_draft);
@@ -111,13 +113,40 @@ class _IdeaEditorState extends State<_IdeaEditor> {
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(hintText: context.l10n.ideaNotesHint),
             ),
-            SectionLabel(context.l10n.goodFor),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _location,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                hintText: context.l10n.locationHint,
+                prefixIcon: const Icon(Icons.place_outlined),
+              ),
+            ),
+            Row(children: [
+              SectionLabel(context.l10n.goodFor),
+              const SizedBox(width: 8),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(context.l10n.weatherMultiHint,
+                    style: const TextStyle(fontSize: 12, color: ZColors.plumSoft)),
+              ),
+            ]),
             Wrap(spacing: 8, runSpacing: 8, children: [
               for (final w in Weather.values)
-                ChoiceChip(
+                FilterChip(
                   label: Text('${w.emoji} ${w.label(context)}'),
-                  selected: _draft.weather == w,
-                  onSelected: (_) => setState(() => _draft.weather = w),
+                  selected: _draft.weathers.contains(w),
+                  showCheckmark: false,
+                  onSelected: (_) => setState(() => _draft.toggleWeather(w)),
+                ),
+            ]),
+            SectionLabel(context.l10n.timeOfDayLabel),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              for (final t in DayTime.values)
+                ChoiceChip(
+                  label: Text('${t.emoji} ${t.label(context)}'),
+                  selected: _draft.timeOfDay == t,
+                  onSelected: (_) => setState(() => _draft.timeOfDay = t),
                 ),
             ]),
             SectionLabel(context.l10n.durationLabel),
